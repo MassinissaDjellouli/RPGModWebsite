@@ -5,12 +5,13 @@ import bcrypt from 'bcrypt';
 
 export const handleError = (response: any, res: Response): boolean => {
     try{
-        if (response != undefined && isApiError(response)) {
+        if ((response != undefined || response != null) && isApiError(response)) {
             const error: IAPIError = response as IAPIError;
             switch (error.err) {
                 case "usernameOrEmailAlreadyExists": res.status(422).json(error); return true;
                 case "emptyFields": res.status(400).json(error); return true;
                 case "wrongCode": res.status(404).json(error); return true;
+                case "expired": res.status(403).json(error); return true;
                 default: res.sendStatus(500); return true;
             }
         }
@@ -40,7 +41,17 @@ export const validateUserAfterDB = async (user:IUser | undefined, body:any, res:
     }
     return false;
 }
-
+export const validateAdminAfterDB = async (user:IUser | undefined, body:any, res: Response):Promise<boolean> => {
+    if (user == undefined) {
+        res.status(404).json({ err: "wrongUsername" });
+        return true;
+    }
+    if (!await bcrypt.compare(body.password, user.password)) {
+        res.status(403).json({ err: "password" });
+        return true;
+    }
+    return false;
+}
 export const validateUserBeforeDB = (body:any, res: Response):boolean => {
     if ((body.username == undefined && body.email == undefined) || body.password == undefined) {
         if (body.password == undefined) {
@@ -48,6 +59,17 @@ export const validateUserBeforeDB = (body:any, res: Response):boolean => {
             return true;
         }
         res.status(400).json({ err: "noUsernameOrEmail" });
+        return true;
+    }
+    return false;
+}
+export const validateAdminBeforeDB = (body:any, res: Response):boolean => {
+    if (body.username == undefined || body.password == undefined) {
+        if (body.password == undefined) {
+            res.status(400).json({ err: "noPWD" });
+            return true;
+        }
+        res.status(400).json({ err: "noUsername" });
         return true;
     }
     return false;

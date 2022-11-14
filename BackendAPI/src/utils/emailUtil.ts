@@ -12,12 +12,13 @@ const transport = nodemailer.createTransport({
     }
 });
 export const sendNewConfirmationEmail = async (email:string):Promise<boolean> => {
-    
     const response = await doDBOperation<any>("getUser", {email:email})
     if(isApiError(response) || response == undefined){
         return false;
     }
-    
+    if(response.confirmedEmail){
+        return false;
+    }
     const userId = response._id!.toString();
     if(await confirmationCodeAlreadyExists(userId) && !await isExpired(userId)){
         return false;

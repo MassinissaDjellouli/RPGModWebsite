@@ -61,3 +61,9 @@ export const newConfirmationEmail = async (req: Request, res: Response) => {
     }
     res.sendStatus(200);
 }
+export const getModVersions = (req: Request, res: Response) => {
+
+}
+export const getModDownload = (req: Request, res: Response) => {
+
+}

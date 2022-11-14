@@ -4,6 +4,7 @@ import { IAPIError, isApiError } from '../models/error';
 import { IUserStats } from '../models/userStats';
 import { IConfirmationCode } from '../models/confirmationCode';
 import UUID from 'uuid';
+import bcrypt from 'bcrypt';
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PWD}@rpgmoddb.kn2lpmy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, 
@@ -21,11 +22,14 @@ export const init = async () => {
     const users = db.collection("users");
     const userStats = db.collection("usersStats");
     const confirmationCodes = db.collection("confirmationCodes");
+    const admins = db.collection("admins");
     await users.createIndex({username: 1}, {unique: true});
     await users.createIndex({email:1}, {unique: true});
+    await admins.createIndex({username: 1}, {unique: true});
     await userStats.createIndex({userId:1}, {unique: true});
     await confirmationCodes.createIndex({code:1}, {unique: true});
     await confirmationCodes.createIndex({userId:1}, {unique: true});
+
     console.log("Database initialized");
 } 
 
@@ -34,6 +38,7 @@ const doDBOperation = async <ExpectedReturn>(operation:string,data?:any):Promise
         switch(operation){
             case "createUser": return await transaction<IUser>(createUser,data);
             case "getUser": return await transaction<any>(getUser,data);
+            case "getAdmin": return await transaction<any>(getAdmin,data);
             case "getUserStats": return await transaction<ObjectId>(getUserStats,data);
             case "uploadUserStats": return await transaction<ObjectId>(uploadUserStats,data);
             case "addConfirmationCode": return await transaction<IConfirmationCode>(addConfirmationCode,data);
@@ -63,6 +68,7 @@ const getUser = async (body:any) => {
     if(body.username == undefined && body.email == undefined){
         return undefined;
     }
+
     const db = client.db(DB_NAME);
     const users = db.collection("users");
     if(body.username != undefined){
@@ -73,7 +79,20 @@ const getUser = async (body:any) => {
     }
     return {err:"emptyFields"} as IAPIError;
 }
-
+const getAdmin = async (body:any) => {
+    if(body.username == undefined && body.email == undefined){
+        return undefined;
+    }
+    if(body.password == undefined){
+        return undefined;
+    }
+    const db = client.db(DB_NAME);
+    const users = db.collection("admins");
+    if(body.username != undefined && body.password != undefined){
+        return users.findOne({username: body.username});
+    }
+    return {err:"emptyFields"} as IAPIError;
+}
 const transaction = async <DataType>(callback:Function,data?:DataType):Promise<any | IAPIError | void> => {
     const session = client.startSession();
     try {
@@ -149,8 +168,10 @@ const confirmEmail = async (code:string) => {
     if(confirmationCode.expirationDate < new Date()){
         return {err:"expired"} as IAPIError;
     }
-    await users.updateOne({id: confirmationCode.userId}, {$set: {emailConfirmed: true}});
-    await codes.deleteOne({code: code});
+    console.log(confirmationCode.userId);
+    
+    await users.findOneAndUpdate({_id: new ObjectId(confirmationCode.userId)}, {$set: {confirmedEmail: true}})
+    await codes.findOneAndDelete({code: code});
 }
 const getCode = async (userId:string) => {
     const db = client.db(DB_NAME);

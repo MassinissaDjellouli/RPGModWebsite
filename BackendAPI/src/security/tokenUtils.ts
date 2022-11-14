@@ -19,7 +19,6 @@ export const authenticateToken = (req:Request, res:Response, next:NextFunction) 
         req.body.user = createUserFromToken(user);
         next();
     });
-    
 }
 
 export const generateToken = (user:IUser) => {
