@@ -1,5 +1,6 @@
-export interface ConfirmationCode {
+export interface IConfirmationCode {
     time: Date;
     code: string;
+    userId: string;
     endTime: Date;
 }

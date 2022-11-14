@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-export interface UserStats {
+export interface IUserStats {
     id: ObjectId | undefined;
     userId: ObjectId;
 }

@@ -1,8 +1,8 @@
-export interface APIError {
+export interface IAPIError {
     err: string;
 }
 
-export function isApiError(object: any): object is APIError {
+export function isApiError(object: any): object is IAPIError {
     try{
         return 'err' in object;
     }catch{

@@ -1,11 +1,9 @@
 import { MongoClient, MongoClientOptions, ObjectId, ServerApiVersion } from "mongodb";
-import { User } from '../models/user';
-import { APIError, isApiError } from '../models/error';
-import { UserStats } from '../models/userStats';
-import { ConfirmationCode } from '../models/confirmationCode';
+import { IUser } from '../models/user';
+import { IAPIError, isApiError } from '../models/error';
+import { IUserStats } from '../models/userStats';
+import { IConfirmationCode } from '../models/confirmationCode';
 import UUID from 'uuid';
-
-
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PWD}@rpgmoddb.kn2lpmy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, 
@@ -27,33 +25,36 @@ export const init = async () => {
     await users.createIndex({email:1}, {unique: true});
     await userStats.createIndex({userId:1}, {unique: true});
     await confirmationCodes.createIndex({code:1}, {unique: true});
+    await confirmationCodes.createIndex({userId:1}, {unique: true});
     console.log("Database initialized");
 } 
 
-const doDBOperation = async <ExpectedReturn>(operation:string,data?:any):Promise<ExpectedReturn | APIError | undefined> => {
+const doDBOperation = async <ExpectedReturn>(operation:string,data?:any):Promise<ExpectedReturn | IAPIError | undefined> => {
     try{
         switch(operation){
-            case "createUser": return await transaction<User>(createUser,data);
+            case "createUser": return await transaction<IUser>(createUser,data);
             case "getUser": return await transaction<any>(getUser,data);
             case "getUserStats": return await transaction<ObjectId>(getUserStats,data);
             case "uploadUserStats": return await transaction<ObjectId>(uploadUserStats,data);
-            case "addConfirmationCode": return await transaction<ConfirmationCode>(addConfirmationCode,data);
+            case "addConfirmationCode": return await transaction<IConfirmationCode>(addConfirmationCode,data);
+            case "confirmEmail": return await transaction<string>(confirmEmail,data);
+            case "getCode": return await transaction<string>(getCode,data);
+            case "isExpired": return await transaction<string>(isExpired,data);
+            case "deleteExpiredCode": return await transaction(deleteExpiredCode,data);
         }
     }catch(err){
-        console.log(err);
-        return {err:"unknownError"} as APIError;
+        return {err:"unknownError"} as IAPIError;
     }
 }
-const createUser = async (user:User) => {
+const createUser = async (user:IUser) => {
     const db = client.db(DB_NAME);
     const users = db.collection("users");
-    let res: ObjectId | undefined | APIError;
+    let res: ObjectId | undefined | IAPIError;
     delete user.id;
     await users.insertOne(user)
     .then((result) => res = result.insertedId)
     .catch((err) => {
-        console.log(err);
-        err.code == 11000 ? res = {err:"usernameOrEmailAlreadyExists"} as APIError : res = undefined
+        err.code == 11000 ? res = {err:"usernameOrEmailAlreadyExists"} as IAPIError : res = undefined
     });
     return res;
 }
@@ -70,10 +71,10 @@ const getUser = async (body:any) => {
     if(body.email != undefined){
         return users.findOne({email: body.email});
     }
-    return {err:"emptyFields"} as APIError;
+    return {err:"emptyFields"} as IAPIError;
 }
 
-const transaction = async <DataType>(callback:Function,data?:DataType):Promise<any | APIError | void> => {
+const transaction = async <DataType>(callback:Function,data?:DataType):Promise<any | IAPIError | void> => {
     const session = client.startSession();
     try {
         let result;
@@ -84,7 +85,7 @@ const transaction = async <DataType>(callback:Function,data?:DataType):Promise<a
              result = await callback();
         }
         if(result != undefined || result != null){
-            const toReturn = isApiError(result) ? result as APIError : result
+            const toReturn = isApiError(result) ? result as IAPIError : result
             await session.commitTransaction();
             return toReturn;
         }
@@ -92,8 +93,7 @@ const transaction = async <DataType>(callback:Function,data?:DataType):Promise<a
         console.log("Transaction committed");
     }catch (err) {
         await session.abortTransaction();
-        console.error(err)
-        return {err:"transactionAborted"} as APIError;
+        return {err:"transactionAborted"} as IAPIError;
 
     }finally{
         session.endSession();
@@ -107,7 +107,7 @@ const getUserStats = async (id:ObjectId) => {
     return users.findOne({userId: id});
 }
 
-const uploadUserStats = async (stats:UserStats) => {
+const uploadUserStats = async (stats:IUserStats) => {
     const db = client.db(DB_NAME);
     const users = db.collection("usersStats");
     delete stats.id;
@@ -119,10 +119,10 @@ const uploadUserStats = async (stats:UserStats) => {
     await users.updateOne({userId: stats.userId}, {$set: stats});
 }
 
-const addConfirmationCode = async (code:ConfirmationCode) => {
+const addConfirmationCode = async (code:IConfirmationCode) => {
     const db = client.db(DB_NAME);
     const users = db.collection("confirmationCodes");
-    let res:string | APIError = "";
+    let res:string | IAPIError = "";
     let wrongCode = true;
     while(wrongCode){
         await users.insertOne(code)
@@ -131,10 +131,54 @@ const addConfirmationCode = async (code:ConfirmationCode) => {
             wrongCode = false;
         })
         .catch((err) => {
-            err.code == 11000 ? wrongCode = true : res = {err:"unknownError"} as APIError;
+            err.code == 11000 ? wrongCode = true : res = {err:"unknownError"} as IAPIError;
             code.code = UUID.v4().toString();
         });
     }
     return res;
+}
+
+const confirmEmail = async (code:string) => {
+    const db = client.db(DB_NAME);
+    const codes = db.collection("confirmationCodes");
+    const users = db.collection("users");
+    const confirmationCode = await codes.findOne({code: code});
+    if(confirmationCode == null){
+        return {err:"wrongCode"} as IAPIError;
+    }
+    if(confirmationCode.expirationDate < new Date()){
+        return {err:"expired"} as IAPIError;
+    }
+    await users.updateOne({id: confirmationCode.userId}, {$set: {emailConfirmed: true}});
+    await codes.deleteOne({code: code});
+}
+const getCode = async (userId:string) => {
+    const db = client.db(DB_NAME);
+    const codes = db.collection("confirmationCodes");
+    const code = await codes.findOne({userId: userId});
+    if(code == null){
+        return {err:"noUser"} as IAPIError;
+    }
+    return code.code;
+}
+
+const isExpired = async (code: string) => {
+    const db = client.db(DB_NAME);
+    const codes = db.collection("confirmationCodes");
+    const confirmationCode = await codes.findOne({code: code});
+    if(confirmationCode == null){
+        return false;
+    }
+    if(confirmationCode.endTime < new Date()){
+        return true;
+    }
+    return false;
+}
+
+const deleteExpiredCode = async (code:string) => {
+    const db = client.db(DB_NAME);
+    const codes = db.collection("confirmationCodes");
+    
+    await codes.findOneAndDelete({code: code});
 }
 export default doDBOperation;

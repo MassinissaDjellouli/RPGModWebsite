@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-export interface User {
+export interface IUser {
     id: ObjectId | undefined;
     username: string;
     password: string;
