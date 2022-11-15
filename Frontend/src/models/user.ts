@@ -7,3 +7,9 @@ export interface IUser {
     creationDate: string;
     linked: boolean;
 }
+
+export interface IUserLogin {
+    username: string;
+    password: string;
+    email: string;
+}

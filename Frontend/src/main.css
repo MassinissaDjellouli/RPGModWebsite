@@ -1,0 +1,32 @@
+a.no-line { text-decoration: none; }
+.dark{
+    background-color: rgb(40, 49, 61);
+    color: #fff;
+}
+
+.bg{
+    background-color: rgb(29, 33, 40);
+}
+.footer{
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    border-top: 3px solid rgb(24, 29, 36);
+    background-color: #f5f5f5;
+}
+
+.w60{
+    width: 10rem;
+    height: 10rem;
+}
+
+div.p-password.p-component.p-inputwrapper{
+    padding: 0;
+}
+
+input.p-inputtext.p-component.p-password-input{
+    width: 100%;
+}
+span.p-hidden-accessible{
+    display: none;
+}

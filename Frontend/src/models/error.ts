@@ -1,4 +1,5 @@
 export interface IAPIError {
+    status: number;
     err: string;
 }
 

@@ -33,6 +33,8 @@ export const init = async () => {
     console.log("Database initialized");
 } 
 
+const db = client.db(DB_NAME);
+
 const doDBOperation = async <ExpectedReturn>(operation:string,data?:any):Promise<ExpectedReturn | IAPIError | undefined> => {
     try{
         switch(operation){
@@ -69,7 +71,6 @@ const getUser = async (body:any) => {
         return undefined;
     }
 
-    const db = client.db(DB_NAME);
     const users = db.collection("users");
     if(body.username != undefined){
         return users.findOne({username: body.username});
@@ -121,13 +122,11 @@ const transaction = async <DataType>(callback:Function,data?:DataType):Promise<a
 }
 
 const getUserStats = async (id:ObjectId) => {
-    const db = client.db(DB_NAME);
     const users = db.collection("usersStats");
     return users.findOne({userId: id});
 }
 
 const uploadUserStats = async (stats:IUserStats) => {
-    const db = client.db(DB_NAME);
     const users = db.collection("usersStats");
     delete stats.id;
     const userStats = await users.findOne({userId: stats.userId})
@@ -139,7 +138,6 @@ const uploadUserStats = async (stats:IUserStats) => {
 }
 
 const addConfirmationCode = async (code:IConfirmationCode) => {
-    const db = client.db(DB_NAME);
     const users = db.collection("confirmationCodes");
     let res:string | IAPIError = "";
     let wrongCode = true;
@@ -158,7 +156,6 @@ const addConfirmationCode = async (code:IConfirmationCode) => {
 }
 
 const confirmEmail = async (code:string) => {
-    const db = client.db(DB_NAME);
     const codes = db.collection("confirmationCodes");
     const users = db.collection("users");
     const confirmationCode = await codes.findOne({code: code});
@@ -174,7 +171,6 @@ const confirmEmail = async (code:string) => {
     await codes.findOneAndDelete({code: code});
 }
 const getCode = async (userId:string) => {
-    const db = client.db(DB_NAME);
     const codes = db.collection("confirmationCodes");
     const code = await codes.findOne({userId: userId});
     if(code == null){
@@ -184,7 +180,6 @@ const getCode = async (userId:string) => {
 }
 
 const isExpired = async (code: string) => {
-    const db = client.db(DB_NAME);
     const codes = db.collection("confirmationCodes");
     const confirmationCode = await codes.findOne({code: code});
     if(confirmationCode == null){
@@ -197,7 +192,6 @@ const isExpired = async (code: string) => {
 }
 
 const deleteExpiredCode = async (code:string) => {
-    const db = client.db(DB_NAME);
     const codes = db.collection("confirmationCodes");
     
     await codes.findOneAndDelete({code: code});

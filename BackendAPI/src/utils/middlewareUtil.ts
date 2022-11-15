@@ -6,12 +6,12 @@ import { Express } from 'express';
 export const initMiddleware = (app:Express) => {
     app.use(express.json());
     app.use(morgan('common'));
-    // app.use(cors(corsOptions));
     app.use(cors());
+    // app.use(cors(corsOptions));
     app.use(helmet());
 }
 
-const whitelist = ['http://localhost:3000']
+const whitelist = ['http://localhost:5173']
 const corsOptions = {
   origin: function (origin:any, callback:any) {
     if (whitelist.indexOf(origin) !== -1) {
