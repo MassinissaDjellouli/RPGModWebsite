@@ -41,14 +41,14 @@ export const getStats = async (req: Request, res: Response) => {
     res.status(200).json(stats);
 }
 export const getUser = async (req: Request, res: Response) => {
-    const user:IUser = req.body.user;
-    const response = await doDBOperation<IUserStats>("getUser", user.id);
+    const user:IUser = req.body.data;
+    const response = await doDBOperation<IUser>("getUser", user);
     if(response == undefined) {
         res.sendStatus(404);
         return;
     }
-    const stats:IUserStats = response as IUserStats;
-    res.status(200).json(stats);
+    const userToReturn:IUser = response as IUser;
+    res.status(200).json(userToReturn);
 }
 export const uploadStats = async (req: Request, res: Response) => {
     const user:IUser = req.body.user;
@@ -58,6 +58,12 @@ export const uploadStats = async (req: Request, res: Response) => {
 }
 
 export const confirmEmail = async (req: Request, res: Response) => {
+    const resp = await doDBOperation<IUser>("getUser", req.body.data);
+    console.log(resp);
+    if(resp == undefined) {
+        res.sendStatus(404);
+        return;
+    }
     const response = await doDBOperation<string>("confirmEmail", req.params.code);
     if(handleError(response,res)) return;
     res.sendStatus(200);

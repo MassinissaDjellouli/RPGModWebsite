@@ -9,7 +9,7 @@ export interface IUser {
 }
 
 export interface ITempUser {
-    username: string;
+    username?: string;
     password: string;
-    email: string;
+    email?: string;
 }

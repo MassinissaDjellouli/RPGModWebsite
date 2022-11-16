@@ -18,11 +18,13 @@ import loggedInNavBarVue from './components/LoggedIn/LoggedInNavBar.vue';
 import loggedOutNavBarVue from './components/LoggedOut/LoggedOutNavBar.vue';
 import loggedOutHomeVue from './components/LoggedOut/LoggedOutHome.vue';
 import inscriptionFormVue from './components/LoggedOut/InscriptionForm.vue';
+import loginFormVue from './components/LoggedOut/LoginForm.vue';
 import Divider from 'primevue/divider';
 import Password from 'primevue/password';
 import homeButtonVue from './components/HomeButton.vue';
 import Ripple from 'primevue/ripple';
 import { login, loginFromCookies } from './utils/apiUtils';
+import confirmEmailmVue from '@/pages/ConfirmEmail.vue';
 import inscriptionPage from "@/pages/InscriptionPage.vue";
 const app = createApp(App)
 
@@ -43,6 +45,8 @@ app.component('LoggedOutHome', loggedOutHomeVue);
 app.component('InscriptionForm', inscriptionFormVue);
 app.component('InscriptionPage', inscriptionPage);
 app.component('HomeButton', homeButtonVue);
+app.component('ConfirmationEmailPage', confirmEmailmVue);
+app.component('LoginForm', loginFormVue);
 app.mount('#app')
 app.directive('ripple', Ripple);
 loginFromCookies();

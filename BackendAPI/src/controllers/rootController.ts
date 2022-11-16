@@ -10,7 +10,7 @@ const rootController = async (app: Express) => {
     app.get('/api/getModVersions', authenticateToken, getModVersions);
     app.get('/api/getModDL/:version', authenticateToken, getModDownload);
     app.post('/api/uploadStats',validate, authenticateToken, uploadStats);
-    app.put('/api/confirmEmail/:code',authenticateToken,validate,confirmEmail);
+    app.put('/api/confirmEmail/:code',validate,confirmEmail);
     app.post('/api/newConfirmationEmail',authenticateToken,validate, newConfirmationEmail);
 }
 export default rootController;
