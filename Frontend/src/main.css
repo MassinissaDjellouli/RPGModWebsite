@@ -1,3 +1,6 @@
+:root{
+    --test:rgb(19, 23, 29);
+}
 a.no-line { text-decoration: none; }
 .dark{
     background-color: rgb(40, 49, 61);
@@ -29,4 +32,11 @@ input.p-inputtext.p-component.p-password-input{
 }
 span.p-hidden-accessible{
     display: none;
+}
+@keyframes p-progress-spinner-color  {
+    100%,
+    0% {
+        stroke: #66baff;
+    }
+
 }

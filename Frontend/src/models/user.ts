@@ -8,7 +8,7 @@ export interface IUser {
     linked: boolean;
 }
 
-export interface IUserLogin {
+export interface ITempUser {
     username: string;
     password: string;
     email: string;

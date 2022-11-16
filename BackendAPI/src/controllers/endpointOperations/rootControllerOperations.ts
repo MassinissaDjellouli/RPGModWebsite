@@ -40,7 +40,16 @@ export const getStats = async (req: Request, res: Response) => {
     const stats:IUserStats = response as IUserStats;
     res.status(200).json(stats);
 }
-
+export const getUser = async (req: Request, res: Response) => {
+    const user:IUser = req.body.user;
+    const response = await doDBOperation<IUserStats>("getUser", user.id);
+    if(response == undefined) {
+        res.sendStatus(404);
+        return;
+    }
+    const stats:IUserStats = response as IUserStats;
+    res.status(200).json(stats);
+}
 export const uploadStats = async (req: Request, res: Response) => {
     const user:IUser = req.body.user;
     const response = await doDBOperation<IUserStats>("uploadUserStats", {userId:user.id} as IUserStats);
