@@ -10,6 +10,7 @@ import {
     doAndHandleTypedPostRequest,
     doRequest
 } from './requestHandlerUtil';
+import type {IModVersions} from "@/models/modVersions";
 
 
 export const login = async (user: ITempUser): Promise<string | IAPIError> => {
@@ -46,7 +47,6 @@ export const getUser = async (token: string): Promise<IUser | IAPIError> => {
 }
 export const sendNewConfirmationEmail = async (email: string): Promise<void | IAPIError> => {
     return await doAndHandlePostRequest('newConfirmationEmail', {email: email})
-
 }
 export const confirmEmail = async (confirmationCode: string, user: ITempUser): Promise<void | IAPIError> => {
     const result = await doAndHandleTypedPostRequest<IUser>("login", user)
@@ -56,15 +56,25 @@ export const confirmEmail = async (confirmationCode: string, user: ITempUser): P
             : result
     )
 }
+export const getModVersions = async (version: string | undefined = undefined): Promise<IModVersions[]> => {
+    version = version === undefined ? "" : `/${version}`
+    const resp = await doAndHandleGetRequest<IModVersions[]>(`getModVersions${version}`) as IModVersions[];
+    return isApiError(resp) ? [] : resp;
+}
 export const loginFromCookies = async (): Promise<void | IAPIError> => {
     const store = useLoggedInStore()
     if (store.token == undefined) {
-
         return;
     }
     const loginResult = await store.login(store.token);
     if (isApiError(loginResult)) {
         return handleError(loginResult) as IAPIError;
+    }
+}
+export const getModDownload = async (version: string): Promise<void | IAPIError> => {
+    const result = await doAndHandleGetRequest(`getModDL/${version}`, undefined);
+    if (isApiError(result)) {
+        return handleError(result) as IAPIError;
     }
 }
 

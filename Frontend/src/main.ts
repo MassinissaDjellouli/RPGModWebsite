@@ -18,17 +18,24 @@ import loggedInHomeVue from './components/LoggedIn/LoggedInHome.vue';
 import loggedOutNavBarVue from './components/LoggedOut/LoggedOutNavBar.vue';
 import loggedOutHomeVue from './components/LoggedOut/LoggedOutHome.vue';
 import sendNewConfirmPageVue from './pages/SendNewConfirmPage.vue';
+import ModVersionsPage from './pages/ModVersionsPage.vue';
 import inscriptionFormVue from './components/LoggedOut/InscriptionForm.vue';
 import loginFormVue from './components/LoggedOut/LoginForm.vue';
 import loginPageVue from './pages/LoginPage.vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import Divider from 'primevue/divider';
 import Password from 'primevue/password';
 import homeButtonVue from './components/HomeButton.vue';
-import Ripple from 'primevue/ripple';
 import confirmEmailmVue from '@/pages/ConfirmEmail.vue';
 import inscriptionPage from "@/pages/InscriptionPage.vue";
 import {loginFromCookies} from "@/utils/apiUtils";
 import Sidebar from 'primevue/sidebar';
+import Dropdown from 'primevue/dropdown';
+import ConfirmationService from 'primevue/confirmationservice';
+import Toast from "primevue/toast";
+import ToastService from 'primevue/toastservice';
+import ConfirmPopup from 'primevue/confirmpopup';
 
 const app = createApp(App)
 
@@ -37,12 +44,22 @@ app.use(createPinia())
 await loginFromCookies();
 
 app.use(router)
-app.use(PrimeVue, {ripple: true});
+app.use(PrimeVue, {
+    locale: {
+        accept: 'Oui',
+        reject: 'Non'
+    }
+});
+app.use(ConfirmationService);
+app.use(ToastService);
 app.component('Toolbar', Toolbar);
+app.component('ConfirmPopup', ConfirmPopup);
+app.component('Toast', Toast);
 app.component('Button', Button);
 app.component('Card', Card);
 app.component('InputText', InputText);
 app.component('Password', Password);
+app.component('Dropdown', Dropdown);
 app.component('Divider', Divider);
 app.component('Sidebar', Sidebar);
 app.component('ProgressSpinner', ProgressSpinner);
@@ -55,7 +72,9 @@ app.component('InscriptionPage', inscriptionPage);
 app.component('HomeButton', homeButtonVue);
 app.component('ConfirmationEmailPage', confirmEmailmVue);
 app.component('SendNewConfirmPage', sendNewConfirmPageVue);
+app.component('ModVersionsPage', ModVersionsPage);
 app.component('LoginPage', loginPageVue);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
 app.component('LoginForm', loginFormVue);
 app.mount('#app')
-app.directive('ripple', Ripple);

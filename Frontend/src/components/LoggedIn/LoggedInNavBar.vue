@@ -6,7 +6,7 @@
 
     <template #end>
       <Button @click="goToDocs()" class="p-button-text mx-4 p-button-lg" v-ripple>Documentation</Button>
-      <Button class="p-button-outlined p-button-lg" @click="deconnexion">Déconnexion</Button>
+      <Button class="p-button-outlined p-button-lg p-button-danger" @click="deconnexion">Déconnexion</Button>
     </template>
   </Toolbar>
 </template>

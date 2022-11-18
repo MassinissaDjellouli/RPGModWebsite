@@ -5,6 +5,7 @@ import {IUserStats} from '../models/userStats';
 import {IConfirmationCode} from '../models/confirmationCode';
 import UUID from 'uuid';
 import bcrypt from "bcrypt";
+import {IModVersions} from "../models/modVersions";
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PWD}@rpgmoddb.kn2lpmy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri,
@@ -16,24 +17,25 @@ const client = new MongoClient(uri,
     } as MongoClientOptions);
 
 const DB_NAME = process.env.DB_NAME;
-
+const db = client.db(DB_NAME);
+const users = db.collection("users");
+const userStats = db.collection("usersStats");
+const confirmationCodes = db.collection("confirmationCodes");
+const admins = db.collection("admins");
+const modVersions = db.collection("modVersions");
 export const init = async () => {
-    const db = client.db(DB_NAME);
-    const users = db.collection("users");
-    const userStats = db.collection("usersStats");
-    const confirmationCodes = db.collection("confirmationCodes");
-    const admins = db.collection("admins");
+
     await users.createIndex({username: 1}, {unique: true});
     await users.createIndex({email: 1}, {unique: true});
     await admins.createIndex({username: 1}, {unique: true});
     await userStats.createIndex({userId: 1}, {unique: true});
     await confirmationCodes.createIndex({code: 1}, {unique: true});
     await confirmationCodes.createIndex({userId: 1}, {unique: true});
+    await modVersions.createIndex({version: 1}, {unique: true});
 
     console.log("Database initialized");
 }
 
-const db = client.db(DB_NAME);
 
 const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Promise<ExpectedReturn | IAPIError | undefined> => {
     try {
@@ -57,15 +59,17 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
             case "isExpired":
                 return await transaction<string>(isExpired, data);
             case "deleteCode":
-                return await transaction(deleteCode, data);
+                return await transaction(deleteCode, data)
+            case "getModVersions":
+                return await transaction(getModVersions)
+            case "getModVersionsPerUpdate":
+                return await transaction<string>(getModVersionsPerUpdate, data)
         }
     } catch (err) {
         return {err: "unknownError"} as IAPIError;
     }
 }
 const createUser = async (user: IUser) => {
-    const db = client.db(DB_NAME);
-    const users = db.collection("users");
     let res: ObjectId | undefined | IAPIError;
     delete user.id;
     await users.insertOne(user)
@@ -85,7 +89,6 @@ const getUser = async (body: any) => {
         return undefined;
     }
 
-    const users = db.collection("users");
     if (body.username != undefined) {
         return users.findOne({username: body.username});
     }
@@ -101,8 +104,6 @@ const getAdmin = async (body: any) => {
     if (body.password == undefined) {
         return undefined;
     }
-    const db = client.db(DB_NAME);
-    const users = db.collection("admins");
     if (body.username != undefined && body.password != undefined) {
         return users.findOne({username: body.username});
     }
@@ -126,6 +127,7 @@ const transaction = async <DataType>(callback: Function, data?: DataType): Promi
         await session.commitTransaction();
         console.log("Transaction committed");
     } catch (err) {
+        console.log(err)
         await session.abortTransaction();
         return {err: "transactionAborted"} as IAPIError;
 
@@ -136,12 +138,10 @@ const transaction = async <DataType>(callback: Function, data?: DataType): Promi
 }
 
 const getUserStats = async (id: ObjectId) => {
-    const users = db.collection("usersStats");
     return users.findOne({userId: id});
 }
 
 const uploadUserStats = async (stats: IUserStats) => {
-    const users = db.collection("usersStats");
     delete stats.id;
     const userStats = await users.findOne({userId: stats.userId})
     if (userStats == null) {
@@ -152,7 +152,6 @@ const uploadUserStats = async (stats: IUserStats) => {
 }
 
 const addConfirmationCode = async (code: IConfirmationCode) => {
-    const users = db.collection("confirmationCodes");
     let res: string | IAPIError = "";
     let wrongCode = true;
     while (wrongCode) {
@@ -170,9 +169,7 @@ const addConfirmationCode = async (code: IConfirmationCode) => {
 }
 
 const confirmEmail = async (codeAndUser: { code: string, user: IUser }) => {
-    const codes = db.collection("confirmationCodes");
-    const users = db.collection("users");
-    const confirmationCode = await codes.findOne({code: codeAndUser.code});
+    const confirmationCode = await confirmationCodes.findOne({code: codeAndUser.code});
     if (codeAndUser.user.confirmedEmail) {
         return {err: "alreadyConfirmed"} as IAPIError;
     }
@@ -187,11 +184,10 @@ const confirmEmail = async (codeAndUser: { code: string, user: IUser }) => {
         return {err: "wrongUser"} as IAPIError;
     }
     await users.findOneAndUpdate({_id: new ObjectId(confirmationCode.userId)}, {$set: {confirmedEmail: true}})
-    await codes.findOneAndDelete({code: codeAndUser.code});
+    await confirmationCodes.findOneAndDelete({code: codeAndUser.code});
 }
 const getCode = async (userId: string) => {
-    const codes = db.collection("confirmationCodes");
-    const code = await codes.findOne({userId: userId});
+    const code = await confirmationCodes.findOne({userId: userId});
     if (code == null) {
         return {err: "noUser"} as IAPIError;
     }
@@ -199,8 +195,7 @@ const getCode = async (userId: string) => {
 }
 
 const isExpired = async (code: string) => {
-    const codes = db.collection("confirmationCodes");
-    const confirmationCode = await codes.findOne({code: code});
+    const confirmationCode = await confirmationCodes.findOne({code: code});
     if (confirmationCode == null) {
         return false;
     }
@@ -211,8 +206,40 @@ const isExpired = async (code: string) => {
 }
 
 const deleteCode = async (code: string) => {
-    const codes = db.collection("confirmationCodes");
+    await confirmationCodes.findOneAndDelete({code: code});
+}
+const getModVersions = async (): Promise<IModVersions[]> => {
+    return await modVersions.find().map(
+        doc => {
+            const toReturn: IModVersions = {
+                version: doc.version,
+                minecraftVersion: doc.minecraftVersion,
+                forgeVersion: doc.forgeVersion,
+                uploadDate: doc.uploadDate,
+                downloadCount: doc.downloadCount
+            }
+            console.log(toReturn)
+            return toReturn;
+        }).toArray() as IModVersions[];
 
-    await codes.findOneAndDelete({code: code});
+}
+const getModVersionsPerUpdate = async (update: string): Promise<IModVersions[]> => {
+    console.log(update)
+    return (await modVersions.find()
+        .map(
+            doc => {
+                const toReturn: IModVersions = {
+                    version: doc.version,
+                    minecraftVersion: doc.minecraftVersion,
+                    forgeVersion: doc.forgeVersion,
+                    uploadDate: doc.uploadDate,
+                    downloadCount: doc.downloadCount
+                }
+                return toReturn;
+            }).toArray()).filter((doc: IModVersions) => {
+        console.log(doc)
+        return doc.minecraftVersion == update
+    }) as IModVersions[];
+
 }
 export default doDBOperation;

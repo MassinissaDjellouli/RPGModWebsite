@@ -27,7 +27,20 @@ export const doAndHandleGetRequest = async <ReturnType>(endpoint: string, data?:
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
     }
+    console.log(result)
     return result as ReturnType;
+}
+export const getMinecraftVersions = async (): Promise<string[]> => {
+    const LATEST_VERSION = ["1.19.2"];
+    try {
+        const response = await axios.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+        if (response.status === 200) {
+            return response.data.versions.filter((version: any) => version.type === "release").map((version: any) => version.id) as string[]
+        }
+        return LATEST_VERSION
+    } catch {
+        return LATEST_VERSION
+    }
 }
 export const doRequest = async (verb: string, endpoint: string, data?: any, token?: string): Promise<any | IAPIError> => {
     try {

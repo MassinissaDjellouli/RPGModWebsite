@@ -8,6 +8,7 @@ import {ObjectId} from 'mongodb';
 import {generateToken} from '../../security/tokenUtils';
 import {IUserStats} from '../../models/userStats';
 import {IAPIError, isApiError} from "../../models/error";
+import {IModVersions} from "../../models/modVersions";
 
 
 export const inscription = async (req: Request, res: Response) => {
@@ -79,7 +80,6 @@ export const confirmEmail = async (req: Request, res: Response) => {
 }
 
 export const newConfirmationEmail = async (req: Request, res: Response) => {
-    console.log(req)
     const result = await sendNewConfirmationEmail(req.body.email)
     if (result != undefined) {
         const status = (result as IAPIError).status;
@@ -88,9 +88,15 @@ export const newConfirmationEmail = async (req: Request, res: Response) => {
     }
     res.sendStatus(200);
 }
-export const getModVersions = (req: Request, res: Response) => {
-
+export const getModVersions = async (req: Request, res: Response) => {
+    const resp = await doDBOperation<IModVersions[]>("getModVersions");
+    res.status(200).json(resp);
+}
+export const getModVersionsPerUpdate = async (req: Request, res: Response) => {
+    const resp = await doDBOperation<IModVersions[]>("getModVersionsPerUpdate", req.params.mcversion);
+    console.log(resp)
+    res.status(200).json(resp);
 }
 export const getModDownload = (req: Request, res: Response) => {
-
+    res.sendStatus(200)
 }

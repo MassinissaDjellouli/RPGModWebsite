@@ -40,10 +40,11 @@
         </template>
         <template #footer>
           <div class="row justify-content-between">
-            <Button class="p-button-secondary col-2 col-lg-4">
-              <p class="d-lg-inline d-none">Télécharger le mod</p>
-              <i class="pi pi-cloud-download d-lg-none d-inline"></i>
-            </Button>
+            <router-link to="/modVersions" class="p-0 d-lg-inline d-none col-2 col-lg-4">
+              <Button class="p-button-secondary col-12">Télécharger le mod
+                <i class="pi pi-cloud-download d-lg-none d-inline"></i>
+              </Button>
+            </router-link>
             <Button @click="goToDocs()" label="Voir la documentation" class="col-lg-7 col-9 p-button-outlined"/>
           </div>
         </template>
@@ -59,8 +60,4 @@
   </footer>
 </template>
 <script lang="ts" setup>
-import {useLoggedInStore} from '@/stores/loggedIn';
-import {goToDocs} from '@/utils/generalUtils';
-
-const store = useLoggedInStore();
-</script>
+import {goToDocs} from '@/utils/generalUtils';</script>

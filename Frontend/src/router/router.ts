@@ -5,6 +5,7 @@ import PageNotFound from "@/pages/PageNotFound.vue";
 import ConfirmEmailPage from "@/pages/ConfirmEmail.vue";
 import LoginPage from "@/pages/LoginPage.vue";
 import SendNewConfirmPage from "@/pages/SendNewConfirmPage.vue";
+import ModVersionsPage from "@/pages/ModVersionsPage.vue";
 import {useLoggedInStore} from "@/stores/loggedIn";
 
 
@@ -39,7 +40,12 @@ const getRoutes = () => {
             path: '/sendNewConfirm',
             name: 'NewConfirm',
             component: SendNewConfirmPage
+        }, {
+            path: '/modVersions',
+            name: 'modVersions',
+            component: ModVersionsPage
         },
+
         {path: '/:pathMatch(.*)*', component: PageNotFound}
     ]
 }
