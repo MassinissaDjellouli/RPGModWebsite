@@ -1,14 +1,14 @@
 import {useCookies} from "vue3-cookies"
 import {defineStore} from 'pinia'
-import type {IUser} from '../models/user';
-import {getUser} from '@/utils/apiUtils';
+import type {IAdmin, IUser} from '../models/user';
+import {getAdmin, getUser} from '@/utils/apiUtils';
 import type {IAPIError} from '../models/error';
 import {isApiError} from '../models/error';
 
 const cookies = useCookies().cookies
 export const useLoggedInStore = defineStore('loggedIn', {
     state: () => ({
-        user: undefined as IUser | undefined,
+        user: undefined as IUser | IAdmin | undefined,
     }),
     getters: {
         isLoggedIn: (state) => {
@@ -29,7 +29,7 @@ export const useLoggedInStore = defineStore('loggedIn', {
             cookies.set('userType', "user")
         },
         async loginAdmin(token: string): Promise<void | IAPIError> {
-            const result = await getUser(token);
+            const result = await getAdmin(token);
             if (isApiError(result)) {
                 return result;
             }

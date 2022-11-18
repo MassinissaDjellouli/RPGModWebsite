@@ -1,4 +1,4 @@
-import type {ITempUser, ITempUserInscription, IUser} from '../models/user';
+import type {IAdmin, ITempUser, ITempUserInscription, IUser} from '../models/user';
 import {useLoggedInStore} from '../stores/loggedIn';
 import type {IAPIError} from '@/models/error';
 import {isApiError} from '../models/error';
@@ -43,7 +43,9 @@ export const inscription = async (user: ITempUserInscription): Promise<void | IA
 }
 export const getUser = async (token: string): Promise<IUser | IAPIError> => {
     return await doAndHandleGetRequest<IUser>('getUser', undefined, token)
-
+}
+export const getAdmin = async (token: string): Promise<IAdmin | IAPIError> => {
+    return await doAndHandleGetRequest<IAdmin>('getAdmin', undefined, token)
 }
 export const sendNewConfirmationEmail = async (email: string): Promise<void | IAPIError> => {
     return await doAndHandlePostRequest('newConfirmationEmail', {email: email})
@@ -66,7 +68,13 @@ export const loginFromCookies = async (): Promise<void | IAPIError> => {
     if (store.token == undefined) {
         return;
     }
-    const loginResult = await store.login(store.token);
+    let loginResult
+    console.log(store.userType)
+    if (store.userType == "admin") {
+        loginResult = await store.loginAdmin(store.token)
+    } else {
+        loginResult = await store.login(store.token);
+    }
     if (isApiError(loginResult)) {
         return handleError(loginResult) as IAPIError;
     }

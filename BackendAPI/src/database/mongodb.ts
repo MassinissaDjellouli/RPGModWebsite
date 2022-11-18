@@ -98,16 +98,14 @@ const getUser = async (body: any) => {
     return {err: "emptyFields"} as IAPIError;
 }
 const getAdmin = async (body: any) => {
-    if (body.username == undefined && body.email == undefined) {
+    if (body.username == undefined) {
         return undefined;
     }
     if (body.password == undefined) {
         return undefined;
     }
-    if (body.username != undefined && body.password != undefined) {
-        return users.findOne({username: body.username});
-    }
-    return {err: "emptyFields"} as IAPIError;
+    return await admins.findOne({username: body.username});
+
 }
 const transaction = async <DataType>(callback: Function, data?: DataType): Promise<any | IAPIError | void> => {
     const session = client.startSession();

@@ -14,6 +14,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import VueCookies from 'vue3-cookies'
 import loggedInNavBarVue from './components/LoggedIn/LoggedInNavBar.vue';
+import adminHome from './components/Administrator/AdminHome.vue';
 import loggedInHomeVue from './components/LoggedIn/LoggedInHome.vue';
 import loggedOutNavBarVue from './components/LoggedOut/LoggedOutNavBar.vue';
 import loggedOutHomeVue from './components/LoggedOut/LoggedOutHome.vue';
@@ -21,6 +22,9 @@ import sendNewConfirmPageVue from './pages/SendNewConfirmPage.vue';
 import ModVersionsPage from './pages/ModVersionsPage.vue';
 import inscriptionFormVue from './components/LoggedOut/InscriptionForm.vue';
 import loginFormVue from './components/LoggedOut/LoginForm.vue';
+import userLogin from './components/LoggedOut/UserLogin.vue';
+import adminLogin from './components/LoggedOut/AdminLogin.vue';
+import adminLoginForm from './components/LoggedOut/AdminLoginForm.vue';
 import loginPageVue from './pages/LoginPage.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -36,6 +40,8 @@ import ConfirmationService from 'primevue/confirmationservice';
 import Toast from "primevue/toast";
 import ToastService from 'primevue/toastservice';
 import ConfirmPopup from 'primevue/confirmpopup';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 const app = createApp(App)
 
@@ -53,6 +59,8 @@ app.use(PrimeVue, {
 app.use(ConfirmationService);
 app.use(ToastService);
 app.component('Toolbar', Toolbar);
+app.component('TabView', TabView);
+app.component('TabPanel', TabPanel);
 app.component('ConfirmPopup', ConfirmPopup);
 app.component('Toast', Toast);
 app.component('Button', Button);
@@ -66,6 +74,10 @@ app.component('ProgressSpinner', ProgressSpinner);
 app.component('LoggedInNavBar', loggedInNavBarVue);
 app.component('LoggedOutNavBar', loggedOutNavBarVue);
 app.component('LoggedOutHome', loggedOutHomeVue);
+app.component('UserLogin', userLogin);
+app.component('AdminLogin', adminLogin);
+app.component('AdminHome', adminHome);
+app.component('AdminLoginForm', adminLoginForm);
 app.component('LoggedInHome', loggedInHomeVue);
 app.component('InscriptionForm', inscriptionFormVue);
 app.component('InscriptionPage', inscriptionPage);

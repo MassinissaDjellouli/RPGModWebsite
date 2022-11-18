@@ -24,6 +24,16 @@ export const validateLoginFields = (state: any): any => {
     validatePwd(fieldErrors, state)
     return fieldErrors;
 }
+export const validateAdminLoginFields = (state: any): any => {
+    const fieldErrors: any = {
+        username: false,
+        password: false,
+        errors: ""
+    }
+    if (!validateUsername(fieldErrors, state)) return fieldErrors;
+    validatePwd(fieldErrors, state, 32)
+    return fieldErrors;
+}
 const validateUsername = (fieldErrors: any, state: any): boolean => {
     const error = fieldErrors.username = state.username.length < 3;
     fieldErrors.errors = error ? "Le nom d'utilisateur doit faire au moins 3 caractères" : "";
@@ -34,9 +44,9 @@ const validateEmail = (fieldErrors: any, state: any): boolean => {
     fieldErrors.errors = error ? "L'adresse email n'est pas valide" : "";
     return !error;
 }
-const validatePwd = (fieldErrors: any, state: any): boolean => {
-    const error = fieldErrors.password = state.password.length < 8;
-    fieldErrors.errors = error ? "Le mot de passe doit faire au moins 8 caractères" : "";
+const validatePwd = (fieldErrors: any, state: any, length: number = 8): boolean => {
+    const error = fieldErrors.password = state.password.length < length;
+    fieldErrors.errors = error ? `Le mot de passe doit faire au moins ${length} caractères` : "";
     return !error;
 }
 const validatePwdConfirm = (fieldErrors: any, state: any): boolean => {

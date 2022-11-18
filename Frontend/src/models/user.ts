@@ -8,6 +8,11 @@ export interface IUser {
     linked: boolean;
 }
 
+export interface IAdmin {
+    username: string;
+    password: string;
+}
+
 export type ITempUserInscription = {
     username: string;
     password: string;
