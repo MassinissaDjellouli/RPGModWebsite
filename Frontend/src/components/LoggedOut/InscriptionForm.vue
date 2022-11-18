@@ -30,8 +30,8 @@
                         <span class="p-inputgroup-addon col-1 d-flex justify-content-center">
                             <i class="pi pi-key pt-1"></i>
                         </span>
-            <Password class="col-xs-11 col-10 custom-pwd ps-0" v-model="state.pwd"
-                      :class="{'p-invalid':state.fieldErrors.pwd}">
+            <Password class="col-xs-11 col-10 custom-pwd ps-0" v-model="state.password"
+                      :class="{'p-invalid':state.fieldErrors.password}">
               <template #header>
                 <h6>Pick a password</h6>
               </template>
@@ -84,12 +84,12 @@ import {isApiError} from "@/models/error";
 const state = reactive({
   username: '',
   email: '',
-  pwd: '',
+  password: '',
   pwdConfirm: '',
   fieldErrors: {
     username: false,
     email: false,
-    pwd: false,
+    password: false,
     pwdConfirm: false
   }
 })
@@ -109,7 +109,7 @@ const submit = () => {
   sendInscription()
 }
 const sendInscription = async () => {
-  const response = await inscription({username: state.username, email: state.email, password: state.pwd})
+  const response = await inscription({username: state.username, email: state.email, password: state.password})
   if (isApiError(response)) {
     errors.value = response.err;
     useLoadingStore().setLoading(false);

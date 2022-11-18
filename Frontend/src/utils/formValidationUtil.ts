@@ -13,24 +13,12 @@ export const validateInscriptionFields = (state: any): any => {
     return fieldErrors;
 }
 export const validateLoginFields = (state: any): any => {
-    console.log(state)
     const fieldErrors: any = {
         username: false,
-        pwd: false,
+        password: false,
         errors: ""
     }
-    if (state.username == undefined && isEmailAddress(state.username)) {
-        state.email = state.username;
-        delete state.username;
-        fieldErrors.email = false;
-        delete fieldErrors.username;
-        if (!validateEmail(fieldErrors, state)) return fieldErrors;
-    } else {
-        if (state.email != undefined) {
-            state.username = state.email;
-            delete state.email;
-        }
-        console.log(state)
+    if (!isEmailAddress(state.username)) {
         if (!validateUsername(fieldErrors, state)) return fieldErrors;
     }
     validatePwd(fieldErrors, state)
@@ -47,18 +35,17 @@ const validateEmail = (fieldErrors: any, state: any): boolean => {
     return !error;
 }
 const validatePwd = (fieldErrors: any, state: any): boolean => {
-    const error = fieldErrors.pwd = state.pwd.length < 8;
+    const error = fieldErrors.password = state.password.length < 8;
     fieldErrors.errors = error ? "Le mot de passe doit faire au moins 8 caractères" : "";
     return !error;
 }
 const validatePwdConfirm = (fieldErrors: any, state: any): boolean => {
-    const error = fieldErrors.pwdConfirm = state.pwdConfirm.length < 8 || state.pwdConfirm !== state.pwd;
+    const error = fieldErrors.pwdConfirm = state.pwdConfirm.length < 8 || state.pwdConfirm !== state.password;
     fieldErrors.errors = error ? "Les mots de passe ne correspondent pas" : "";
     return !error;
 }
-const isEmailAddress = (toCheck: string): boolean => {
+export const isEmailAddress = (toCheck: string): boolean => {
     const emailRegex = /^([a-z0-9]+(?:[._-][a-z0-9]+)*)@([a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,})$/
-    console.log(emailRegex.test(toCheck))
     return emailRegex.test(toCheck)
 
 }

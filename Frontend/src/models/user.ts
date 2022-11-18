@@ -8,8 +8,21 @@ export interface IUser {
     linked: boolean;
 }
 
-export interface ITempUser {
-    username?: string;
+export type ITempUserInscription = {
+    username: string;
     password: string;
-    email?: string;
+    email: string;
+}
+
+export interface ITempUser {
+    password: string;
+}
+
+export interface ITempUserEmail extends ITempUser {
+    email: string;
+}
+
+
+export interface ITempUserUsername extends ITempUser {
+    username: string;
 }

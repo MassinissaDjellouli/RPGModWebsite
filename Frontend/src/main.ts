@@ -1,7 +1,6 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import {createApp} from 'vue'
+import {createPinia} from 'pinia'
 import ProgressSpinner from 'primevue/progressspinner';
-
 import 'primevue/resources/themes/bootstrap4-dark-blue/theme.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'primeicons/primeicons.css';
@@ -23,15 +22,17 @@ import Divider from 'primevue/divider';
 import Password from 'primevue/password';
 import homeButtonVue from './components/HomeButton.vue';
 import Ripple from 'primevue/ripple';
-import { login, loginFromCookies } from './utils/apiUtils';
+import {login, loginFromCookies} from './utils/apiUtils';
 import confirmEmailmVue from '@/pages/ConfirmEmail.vue';
 import inscriptionPage from "@/pages/InscriptionPage.vue";
+
+
 const app = createApp(App)
 
 app.use(VueCookies);
 app.use(createPinia())
 app.use(router)
-app.use(PrimeVue, { ripple: true });
+app.use(PrimeVue, {ripple: true});
 app.component('Toolbar', Toolbar);
 app.component('Button', Button);
 app.component('Card', Card);
