@@ -14,7 +14,7 @@ export const useLoggedInStore = defineStore('loggedIn', {
         isLoggedIn: (state) => {
             return state.user !== undefined
         },
-        getUser: (state) => state.user as IUser,
+        getUser: (state) => state.user as IUser | IAdmin,
         userType: () => cookies.get('userType'),
         token: () => cookies.get('token'),
     },

@@ -16,7 +16,4 @@
 
 </template>
 <script setup lang="ts">
-import {useLoadingStore} from "@/stores/loading";
-
-const loading = useLoadingStore();
 </script>

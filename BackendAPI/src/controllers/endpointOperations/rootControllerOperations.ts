@@ -94,7 +94,6 @@ export const getModVersions = async (req: Request, res: Response) => {
 }
 export const getModVersionsPerUpdate = async (req: Request, res: Response) => {
     const resp = await doDBOperation<IModVersions[]>("getModVersionsPerUpdate", req.params.mcversion);
-    console.log(resp)
     res.status(200).json(resp);
 }
 export const getModDownload = (req: Request, res: Response) => {

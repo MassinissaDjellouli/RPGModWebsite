@@ -27,7 +27,6 @@ export const doAndHandleGetRequest = async <ReturnType>(endpoint: string, data?:
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
     }
-    console.log(result)
     return result as ReturnType;
 }
 export const getMinecraftVersions = async (): Promise<string[]> => {
@@ -55,7 +54,6 @@ export const doRequest = async (verb: string, endpoint: string, data?: any, toke
         }
         return result.data;
     } catch (err: any) {
-        console.log(err.response.data)
         if (err.response == undefined) {
             return {status: 500, err: "Erreur inconnue"} as IAPIError;
         }

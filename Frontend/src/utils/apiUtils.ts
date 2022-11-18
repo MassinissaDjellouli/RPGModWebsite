@@ -69,7 +69,6 @@ export const loginFromCookies = async (): Promise<void | IAPIError> => {
         return;
     }
     let loginResult
-    console.log(store.userType)
     if (store.userType == "admin") {
         loginResult = await store.loginAdmin(store.token)
     } else {

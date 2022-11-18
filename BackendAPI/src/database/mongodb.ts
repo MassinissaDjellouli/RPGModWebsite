@@ -81,11 +81,7 @@ const createUser = async (user: IUser) => {
 }
 
 const getUser = async (body: any) => {
-    console.log("b")
-    console.log(body)
     if (!("username" in body || "email" in body)) {
-        console.log("bssssssssssss")
-
         return undefined;
     }
 
@@ -216,13 +212,11 @@ const getModVersions = async (): Promise<IModVersions[]> => {
                 uploadDate: doc.uploadDate,
                 downloadCount: doc.downloadCount
             }
-            console.log(toReturn)
             return toReturn;
         }).toArray() as IModVersions[];
 
 }
 const getModVersionsPerUpdate = async (update: string): Promise<IModVersions[]> => {
-    console.log(update)
     return (await modVersions.find()
         .map(
             doc => {
@@ -235,7 +229,6 @@ const getModVersionsPerUpdate = async (update: string): Promise<IModVersions[]> 
                 }
                 return toReturn;
             }).toArray()).filter((doc: IModVersions) => {
-        console.log(doc)
         return doc.minecraftVersion == update
     }) as IModVersions[];
 
