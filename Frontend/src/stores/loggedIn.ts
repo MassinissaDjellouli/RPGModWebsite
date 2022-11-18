@@ -1,49 +1,46 @@
 import {useCookies} from "vue3-cookies"
-import { defineStore } from 'pinia'
-import type { IUser } from '../models/user';
-import { getUser } from '@/utils/apiUtils';
-import type { IAPIError } from '../models/error';
-import { isApiError } from '../models/error';
+import {defineStore} from 'pinia'
+import type {IUser} from '../models/user';
+import {getUser} from '@/utils/apiUtils';
+import type {IAPIError} from '../models/error';
+import {isApiError} from '../models/error';
 
 const cookies = useCookies().cookies
 export const useLoggedInStore = defineStore('loggedIn', {
-  state: () => ({
-    user:undefined as IUser | undefined,
-  }),
-  getters: {
-    isLoggedIn:(state) => state.user !== undefined,
-    userType:(state) => cookies.get('userType'),
-    token:(state) => cookies.get('token'),
-  },
-  actions: {
-    async login(token:string):Promise<void | IAPIError>{
-      const result = await getUser(token);
-      if( isApiError(result) ){
-        return result;
-      }
-      this.user = result;
-      cookies.set('token', token)
-      cookies.set('userType', "user")
+    state: () => ({
+        user: undefined as IUser | undefined,
+    }),
+    getters: {
+        isLoggedIn: (state) => {
+            return state.user !== undefined
+        },
+        userType: () => cookies.get('userType'),
+        token: () => cookies.get('token'),
     },
-    async loginAdmin(token:string):Promise<void | IAPIError>{
-      const result = await getUser(token);
-      if( isApiError(result) ){
-        return result;
-      }
-      this.user = result;
-      cookies.set('token', token)
-      cookies.set('userType', "admin")
-    },
-    async logout(token:string):Promise<void | IAPIError>{
-      const result = await getUser(token);
-      if( isApiError(result) ){
-        return result;
-      }
-      this.user = result;
-      cookies.remove('token')
-      cookies.remove('userType')
-    },
-  }
+    actions: {
+        async login(token: string): Promise<void | IAPIError> {
+            const result = await getUser(token);
+            if (isApiError(result)) {
+                return result;
+            }
+            this.user = result;
+            cookies.set('token', token)
+            cookies.set('userType', "user")
+        },
+        async loginAdmin(token: string): Promise<void | IAPIError> {
+            const result = await getUser(token);
+            if (isApiError(result)) {
+                return result;
+            }
+            this.user = result;
+            cookies.set('token', token)
+            cookies.set('userType', "admin")
+        },
+        async logout(): Promise<void | IAPIError> {
+            cookies.remove('token')
+            cookies.remove('userType')
+        },
+    }
 
 })
 

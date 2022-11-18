@@ -37,8 +37,12 @@ export const doRequest = async (verb: string, endpoint: string, data?: any, toke
             url: `${API_URL}/${endpoint}`,
             data: data
         })
+        if (isApiError(result.data)) {
+            return {status: result.status, err: result.data.err} as IAPIError;
+        }
         return result.data;
     } catch (err: any) {
+        console.log(err.response.data)
         if (err.response == undefined) {
             return {status: 500, err: "Erreur inconnue"} as IAPIError;
         }

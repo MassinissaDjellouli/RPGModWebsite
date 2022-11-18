@@ -56,8 +56,8 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<string>(getCode, data);
             case "isExpired":
                 return await transaction<string>(isExpired, data);
-            case "deleteExpiredCode":
-                return await transaction(deleteExpiredCode, data);
+            case "deleteCode":
+                return await transaction(deleteCode, data);
         }
     } catch (err) {
         return {err: "unknownError"} as IAPIError;
@@ -77,7 +77,11 @@ const createUser = async (user: IUser) => {
 }
 
 const getUser = async (body: any) => {
-    if ("username" ! in body && "email" ! in body) {
+    console.log("b")
+    console.log(body)
+    if (!("username" in body || "email" in body)) {
+        console.log("bssssssssssss")
+
         return undefined;
     }
 
@@ -109,7 +113,6 @@ const transaction = async <DataType>(callback: Function, data?: DataType): Promi
     try {
         let result;
         session.startTransaction();
-        console.log(data)
         if (data != undefined) {
             result = await callback(data);
         } else {
@@ -123,7 +126,6 @@ const transaction = async <DataType>(callback: Function, data?: DataType): Promi
         await session.commitTransaction();
         console.log("Transaction committed");
     } catch (err) {
-        console.log(err)
         await session.abortTransaction();
         return {err: "transactionAborted"} as IAPIError;
 
@@ -208,7 +210,7 @@ const isExpired = async (code: string) => {
     return false;
 }
 
-const deleteExpiredCode = async (code: string) => {
+const deleteCode = async (code: string) => {
     const codes = db.collection("confirmationCodes");
 
     await codes.findOneAndDelete({code: code});

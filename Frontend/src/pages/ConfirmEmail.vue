@@ -9,9 +9,15 @@
       {{ requestError }}
     </h1>
     <div v-if="!loading.isLoading">
-      <h1 class="text-center text-light m-5">
+      <h1 class="text-center text-light mt-5">
         Confirmez votre email
       </h1>
+      <div class="row d-flex justify-content-center">
+        <router-link class="text-center text-light col-lg-3 col-xl-2 col-md-4 col-7" to="/sendNewConfirm">Vous n'avez
+          pas reçu de
+          courriel?
+        </router-link>
+      </div>
       <div class="container">
         <div class="row d-flex justify-content-center">
           <div class="col-lg-6 mb-4 row align-content-center">
@@ -71,13 +77,13 @@ const confirmEmail = () => {
     confirmationError.value = "Veuillez entrer un code de confirmation";
     return;
   }
-  loading.loading = true;
+  loading.setLoading(true);
   const result = validateLoginFields(state.value)
   errors.value = result.errors;
   delete result.errors
   invalidFields.value = result;
   if (hasErrors()) {
-    loading.loading = false;
+    loading.setLoading(false);
     return;
   }
   sendConfirm()

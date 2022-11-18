@@ -12,7 +12,7 @@ import {
 } from './requestHandlerUtil';
 
 
-export const login = async (user: ITempUser): Promise<void | IAPIError> => {
+export const login = async (user: ITempUser): Promise<string | IAPIError> => {
     const result = await doRequest('post', 'login', user)
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
@@ -22,6 +22,7 @@ export const login = async (user: ITempUser): Promise<void | IAPIError> => {
     if (isApiError(loginResult)) {
         return handleError(loginResult) as IAPIError;
     }
+    return result as string;
 }
 
 export const adminLogin = async (user: ITempUser): Promise<void | IAPIError> => {
@@ -43,6 +44,10 @@ export const getUser = async (token: string): Promise<IUser | IAPIError> => {
     return await doAndHandleGetRequest<IUser>('getUser', undefined, token)
 
 }
+export const sendNewConfirmationEmail = async (email: string): Promise<void | IAPIError> => {
+    return await doAndHandlePostRequest('newConfirmationEmail', {email: email})
+
+}
 export const confirmEmail = async (confirmationCode: string, user: ITempUser): Promise<void | IAPIError> => {
     const result = await doAndHandleTypedPostRequest<IUser>("login", user)
     return (
@@ -53,7 +58,8 @@ export const confirmEmail = async (confirmationCode: string, user: ITempUser): P
 }
 export const loginFromCookies = async (): Promise<void | IAPIError> => {
     const store = useLoggedInStore()
-    if (store.token == undefined || store.token == null) {
+    if (store.token == undefined) {
+
         return;
     }
     const loginResult = await store.login(store.token);

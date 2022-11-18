@@ -27,10 +27,18 @@ const handle400 = (error: IAPIError) => {
     console.log(error)
 }
 const handle401 = (error: IAPIError) => {
+    switch (error.err) {
+        case 'alreadyConfirmed':
+            error.err = "Cette addresse email est déja confirmée";
+            return error;
+    }
     console.log(error)
 }
 const handle403 = (error: IAPIError) => {
     switch (error.err) {
+        case 'unconfirmedEmail':
+            error.err = "Votre addresse email n'a pas été confirmée";
+            return error;
         case 'alreadyConfirmed':
             error.err = "Votre compte est déjà confirmé";
             return error;
@@ -40,6 +48,7 @@ const handle403 = (error: IAPIError) => {
 const handle404 = (error: IAPIError) => {
     console.log(error)
     switch (error.err) {
+        case 'emailNotFound':
         case 'wrongEmail':
             error.err = "Cette addresse email n'existe pas";
             return error;
@@ -62,6 +71,9 @@ const handle422 = (error: IAPIError) => {
 }
 const handle500 = (error: IAPIError) => {
     switch (error.err) {
+        case 'emailNotSent':
+            error.err = "L'email n'a pas pu être envoyé. Veuillez réessayer plus tard";
+            return error;
         case 'Erreur inconnue':
             return error;
     }

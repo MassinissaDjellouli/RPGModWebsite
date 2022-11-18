@@ -11,22 +11,22 @@ const transport = nodemailer.createTransport({
         pass: process.env.EMAIL_PWD
     }
 });
-export const sendNewConfirmationEmail = async (email: string): Promise<boolean> => {
+export const sendNewConfirmationEmail = async (email: string): Promise<void | IAPIError> => {
     const response = await doDBOperation<any>("getUser", {email: email})
     if (isApiError(response) || response == undefined) {
-        return false;
+        return (response == undefined ? {err: "emailNotFound", status: 404} : response) as IAPIError;
     }
     if (response.confirmedEmail) {
-        return false;
+        return {err: "alreadyConfirmed", status: 401} as IAPIError;
     }
     const userId = response._id!.toString();
-    if (await confirmationCodeAlreadyExists(userId) && !await isExpired(userId)) {
-        return false;
+    if (await confirmationCodeAlreadyExists(userId) || await isExpired(userId)) {
+        await doDBOperation<string>("deleteCode", await getCode(userId));
     }
-    if (await isExpired(userId)) {
-        await doDBOperation<string>("deleteExpiredCode", await getCode(userId));
+    if (await sendConfirmationEmail(email, userId)) {
+        return
     }
-    return sendConfirmationEmail(email, userId);
+    return {err: "emailNotSent"} as IAPIError;
 }
 
 export const sendConfirmationEmail = async (email: string, userId: string): Promise<boolean> => {

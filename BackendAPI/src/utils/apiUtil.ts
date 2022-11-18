@@ -23,7 +23,6 @@ export const handleError = (response: any, res: Response): boolean => {
                     res.status(403).json(error);
                     return true;
                 default:
-                    console.log(error);
                     res.sendStatus(500);
                     return true;
             }

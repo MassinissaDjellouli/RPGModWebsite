@@ -97,7 +97,7 @@ const hasErrors = () => {
   return errors.value !== "";
 }
 const submit = () => {
-  loading.loading = true;
+  loading.setLoading(true);
   const result = validateInscriptionFields(state)
   errors.value = result.errors;
   delete result.errors

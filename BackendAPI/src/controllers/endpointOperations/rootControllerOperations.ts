@@ -7,11 +7,11 @@ import {handleError, validateUserAfterDB, validateUserBeforeDB} from '../../util
 import {ObjectId} from 'mongodb';
 import {generateToken} from '../../security/tokenUtils';
 import {IUserStats} from '../../models/userStats';
+import {IAPIError, isApiError} from "../../models/error";
 
 
 export const inscription = async (req: Request, res: Response) => {
     const body = req.body;
-    console.log(body);
     const user: IUser = await createUser(body)
     const response = await doDBOperation<ObjectId>("createUser", user);
     if (handleError(response, res)) return;
@@ -42,11 +42,15 @@ export const getStats = async (req: Request, res: Response) => {
     res.status(200).json(stats);
 }
 export const getUser = async (req: Request, res: Response) => {
-    const user: IUser = req.body;
+    const user: IUser = req.body.user;
     const response = await doDBOperation<IUser>("getUser", user);
     if (response == undefined) {
         res.status(404).json({err: "userNotFound"});
         console.log("User not found");
+        return;
+    }
+    if (isApiError(response)) {
+        res.status(400).json(response);
         return;
     }
     const userToReturn: IUser = response as IUser;
@@ -75,8 +79,11 @@ export const confirmEmail = async (req: Request, res: Response) => {
 }
 
 export const newConfirmationEmail = async (req: Request, res: Response) => {
-    if (!await sendNewConfirmationEmail(req.body.email)) {
-        res.status(500).json({err: "emailNotSent"});
+    console.log(req)
+    const result = await sendNewConfirmationEmail(req.body.email)
+    if (result != undefined) {
+        const status = (result as IAPIError).status;
+        res.status(status != undefined ? status : 500).json(result as IAPIError);
         return;
     }
     res.sendStatus(200);

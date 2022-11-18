@@ -1,11 +1,12 @@
 export interface IAPIError {
+    status: number | undefined;
     err: string;
 }
 
 export function isApiError(object: any): object is IAPIError {
-    try{
+    try {
         return 'err' in object;
-    }catch{
+    } catch {
         return false;
     }
 }
