@@ -31,6 +31,7 @@ export const adminLogin = async (user: ITempUser): Promise<void | IAPIError> => 
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
     }
+    console.log(user)
     const store = useLoggedInStore()
     const loginResult = await store.loginAdmin(result);
     if (isApiError(loginResult)) {
@@ -79,9 +80,14 @@ export const loginFromCookies = async (): Promise<void | IAPIError> => {
     }
 }
 export const getModDownload = async (version: string): Promise<void | IAPIError> => {
-    const result = await doAndHandleGetRequest(`getModDL/${version}`, undefined);
-    if (isApiError(result)) {
-        return handleError(result) as IAPIError;
+    return await doAndHandleGetRequest(`getModDL/${version}`, undefined);
+
+}
+export const uploadMod = async (mod: any): Promise<void | IAPIError> => {
+    const store = useLoggedInStore()
+    if (store.userType != "admin") {
+        return;
     }
+    return await doAndHandlePostRequest("uploadNewModVersion", mod, store.token);
 }
 

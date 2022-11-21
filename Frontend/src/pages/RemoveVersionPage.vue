@@ -1,9 +1,9 @@
 <template>
-  <Toast position="bottom-right" group="br"/>
   <div class="col-6 m-5">
     <HomeButton/>
   </div>
   <div v-if="!loading.isLoading">
+    <Toast position="bottom-right" group="br"/>
     <h1 class="text-center text-light mt-1">Versions du mod</h1>
     <div class="d-flex justify-content-center">
       <div class="p-inputgroup p-0 m-0 d-flex justify-content-center">
@@ -24,10 +24,10 @@
                currentPageReportTemplate="{first}-{last}/{totalRecords} versions"
                responsiveLayout="scroll">
       <Column v-for="col of columns" :field="col.field" :header="col.header" sortable="true"/>
-      <Column header="Télécharger">
+      <Column header="Supprimer">
         <template #body="{data}">
           <div class="ms-3">
-            <Button @click="onDownload($event,data)"><i class="pi pi-download pt-1"></i></Button>
+            <Button class=" p-button-danger" @click="onRemove($event,data)"><i class="pi pi-trash pt-1"></i></Button>
           </div>
           <ConfirmPopup :acceptLabel="'Oui'" :rejectLabel="'Non'"/>
         </template>
@@ -41,51 +41,29 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {getModDownload, getModVersions} from "@/utils/apiUtils";
-import type {IModVersions} from "@/models/modVersions";
 import {useLoadingStore} from "@/stores/loading";
+import {ref} from "vue";
+import type {IModVersions} from "@/models/modVersions";
 import {getMinecraftVersions} from "@/utils/requestHandlerUtil";
+import {getModVersions} from "@/utils/apiUtils";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
-import {isApiError} from "@/models/error";
 
-const onDownload = async (event: any, data: IModVersions) => {
+const confirm = useConfirm()
+const toast = useToast();
+const onRemove = (event: any, data: IModVersions) => {
   confirm.require({
     target: event.currentTarget,
-    message: `Voulez-vous télécharger cette version: ${data.version} ?`,
+    message: 'Voulez vous supprimer cette version?',
     icon: 'pi pi-exclamation-triangle',
-    accept: async () => {
-      toast.add({
-        severity: 'info',
-        summary: 'Téléchargement en cours',
-        detail: 'Le téléchargement va bientôt commencer',
-        group: "br",
-        life: 5000
-      });
-      const res = await getModDownload(data.version);
-      if (res == undefined) {
-        toast.add({
-          severity: 'success',
-          summary: 'Téléchargement terminé',
-          detail: `Le téléchargement de ${data.version} est terminé`,
-          group: "br",
-          life: 5000
-        });
-      } else if (isApiError(res)) {
-        toast.add({
-          severity: 'error',
-          summary: 'Erreur',
-          detail: `${data.version} n'a pas pu être téléchargé: ${res.err}`,
-          group: "br",
-          life: 5000
-        });
-      }
+    acceptClass: 'p-button-danger',
+    accept: () => {
+      toast.add({severity: 'warn', summary: 'Suppression', detail: 'Suppression en cours', group: "br", life: 5000});
+
+      toast.add({severity: 'success', summary: 'Suppression', detail: 'Suppression terminée', group: "br", life: 5000});
     }
   });
 }
-const confirm = useConfirm()
-const toast = useToast();
 const columns = [
   {header: "Version", field: "version"},
   {header: "Version de Minecraft", field: "minecraftVersion"},
@@ -121,5 +99,6 @@ const onChange = async () => {
   }
   loading.setLoading(false);
 }
+
 init();
 </script>

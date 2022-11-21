@@ -7,7 +7,7 @@
       <AdminLoginForm v-model="state" :errors="errors" :invalid-fields="invalidFields"/>
     </div>
     <div class="d-flex justify-content-center my-5 pb-5">
-      <Button class="col-md-4 col-7 fs-1  p-button-outlined" label="Connection" @click="logIn"/>
+      <Button class="col-md-4 col-7 fs-1  p-button-outlined" label="Connexion" @click="logIn"/>
     </div>
   </div>
   <div v-else class="d-flex justify-content-center">
@@ -42,6 +42,7 @@ const sendLogin = async () => {
   if (isApiError(response)) {
     useLoadingStore().setLoading(false);
     errors.value = response.err;
+    console.log(response.err);
     return
   }
   useLoadingStore().setLoading(false);

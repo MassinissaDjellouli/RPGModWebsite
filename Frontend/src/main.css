@@ -1,16 +1,21 @@
-:root{
-    --test:rgb(19, 23, 29);
+:root {
+    --test: rgb(19, 23, 29);
 }
-a.no-line { text-decoration: none; }
-.dark{
+
+a.no-line {
+    text-decoration: none;
+}
+
+.dark {
     background-color: rgb(40, 49, 61);
     color: #fff;
 }
 
-.bg{
+.bg {
     background-color: rgb(29, 33, 40);
 }
-.footer{
+
+.footer {
     position: sticky;
     bottom: 0;
     width: 100%;
@@ -18,28 +23,35 @@ a.no-line { text-decoration: none; }
     background-color: #f5f5f5;
 }
 
-.w60{
+.w60 {
     width: 10rem;
     height: 10rem;
 }
 
-div.p-password.p-component.p-inputwrapper{
+div.p-password.p-component.p-inputwrapper {
     padding: 0;
 }
 
-input.p-inputtext.p-component.p-password-input{
+input.p-inputtext.p-component.p-password-input {
     width: 100%;
 }
-span.p-hidden-accessible{
+
+span.p-hidden-accessible {
     display: none;
 }
-@keyframes p-progress-spinner-color  {
+
+@keyframes p-progress-spinner-color {
     100%,
     0% {
         stroke: #66baff;
     }
 
 }
-.p-text-primary{
+
+.p-text-primary {
     color: #71d2ff;
+}
+
+.p-fileupload-file-thumbnail {
+    display: none;
 }

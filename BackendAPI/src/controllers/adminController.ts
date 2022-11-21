@@ -6,6 +6,7 @@ import {authenticateToken} from "../security/tokenUtils";
 const adminController = async (app: Express) => {
     app.post('/api/adminLogin', validate, adminLogin);
     app.get('/api/getAdmin', authenticateToken, getAdmin);
-    app.post('/api/uploadNewModVersion', validate, uploadNewModVersion);
+    app.post('/api/uploadNewModVersion', authenticateToken, uploadNewModVersion);
+
 }
 export default adminController;

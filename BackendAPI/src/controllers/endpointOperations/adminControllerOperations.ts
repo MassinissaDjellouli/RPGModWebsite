@@ -3,9 +3,10 @@ import {handleError, validateAdminAfterDB, validateAdminBeforeDB} from '../../ut
 import doDBOperation from "../../database/mongodb";
 import {generateToken} from "../../security/tokenUtils";
 import {IUser} from "../../models/user";
-import {IAPIError} from "../../models/error";
+import {IAPIError, isApiError} from "../../models/error";
 
 export const adminLogin = async (req: Request, res: Response) => {
+    console.log(req.body)
     if (validateAdminBeforeDB(req.body, res)) return;
     const response = await doDBOperation<IUser>("getAdmin", req.body);
     if (handleError(response, res)) return;
@@ -24,5 +25,11 @@ export const getAdmin = async (req: Request, res: Response) => {
     res.status(200).json(response);
 }
 export const uploadNewModVersion = async (req: Request, res: Response) => {
-
+    const response = await doDBOperation("addModVersion", req.body.modVersion);
+    if (isApiError(response)) {
+        res.status(response.status == undefined ? 500 : response.status).json(response);
+        return;
+    }
+    res.sendStatus(201);
 }
+

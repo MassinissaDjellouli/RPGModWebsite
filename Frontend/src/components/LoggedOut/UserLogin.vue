@@ -5,13 +5,15 @@
       Utilisateurs
     </h1>
     <div class="row justify-content-center d-flex pb-5">
-      <router-link to="/confirmEmail" class="text-center text-light mt-1 col-2">Email à confirmer?</router-link>
+      <router-link to="/confirmEmail" class="text-center text-light mt-1 col-lg-2 col-sm-4 col-md-3 col-6">Email à
+        confirmer?
+      </router-link>
     </div>
     <div class="col d-flex justify-content-center">
       <LoginForm v-model="state" :errors="errors" :invalid-fields="invalidFields"/>
     </div>
     <div class="d-flex justify-content-center my-5 pb-5">
-      <Button class="col-md-4 col-7 fs-1  p-button-outlined" label="Connection" @click="logIn"/>
+      <Button class="col-md-4 col-7 fs-1  p-button-outlined" label="Connexion" @click="logIn"/>
     </div>
   </div>
   <div v-else class="d-flex justify-content-center">

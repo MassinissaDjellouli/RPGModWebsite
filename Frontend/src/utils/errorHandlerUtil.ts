@@ -42,6 +42,9 @@ const handle403 = (error: IAPIError) => {
         case 'alreadyConfirmed':
             error.err = "Votre compte est déjà confirmé";
             return error;
+        case 'password':
+            error.err = "Mot de passe incorrect";
+            return error;
     }
     console.log(error)
 }
@@ -66,6 +69,9 @@ const handle422 = (error: IAPIError) => {
     switch (error.err) {
         case 'usernameOrEmailAlreadyExists':
             error.err = "Ce nom d'utilisateur ou cette addresse email existe déjà";
+            return error;
+        case 'versionAlreadyExists':
+            error.err = "Cette version existe déjà";
             return error;
     }
 }

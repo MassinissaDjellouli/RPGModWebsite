@@ -19,8 +19,8 @@ const showSideBar = () => {
   props.sidebar.shown = true;
 }
 const store = useLoggedInStore();
-const deconnexion = () => {
-  store.logout();
+const deconnexion = async () => {
+  await store.logout();
   window.location.href = "/";
 }
 </script>

@@ -5,7 +5,7 @@ import {IUserStats} from '../models/userStats';
 import {IConfirmationCode} from '../models/confirmationCode';
 import UUID from 'uuid';
 import bcrypt from "bcrypt";
-import {IModVersions} from "../models/modVersions";
+import {IModVersions, INewModVersion} from "../models/modVersions";
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PWD}@rpgmoddb.kn2lpmy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri,
@@ -23,6 +23,7 @@ const userStats = db.collection("usersStats");
 const confirmationCodes = db.collection("confirmationCodes");
 const admins = db.collection("admins");
 const modVersions = db.collection("modVersions");
+const modVersionsFiles = db.collection("modVersionsFiles");
 export const init = async () => {
 
     await users.createIndex({username: 1}, {unique: true});
@@ -32,6 +33,7 @@ export const init = async () => {
     await confirmationCodes.createIndex({code: 1}, {unique: true});
     await confirmationCodes.createIndex({userId: 1}, {unique: true});
     await modVersions.createIndex({version: 1}, {unique: true});
+    await modVersionsFiles.createIndex({version: 1}, {unique: true});
 
     console.log("Database initialized");
 }
@@ -64,6 +66,8 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction(getModVersions)
             case "getModVersionsPerUpdate":
                 return await transaction<string>(getModVersionsPerUpdate, data)
+            case "addModVersion":
+                return await transaction<INewModVersion>(addModVersion, data)
         }
     } catch (err) {
         return {err: "unknownError"} as IAPIError;
@@ -231,6 +235,38 @@ const getModVersionsPerUpdate = async (update: string): Promise<IModVersions[]> 
             }).toArray()).filter((doc: IModVersions) => {
         return doc.minecraftVersion == update
     }) as IModVersions[];
+
+}
+const addModVersion = async (modVersion: INewModVersion) => {
+    let res = await modVersions.insertOne({
+        version: modVersion.version,
+        minecraftVersion: modVersion.minecraftVersion,
+        forgeVersion: modVersion.forgeVersion,
+        uploadDate: modVersion.uploadDate,
+        downloadCount: modVersion.downloadCount
+    }).catch((err) => {
+        console.log(err)
+        return err.code == 11000 ? {
+            status: 422,
+            err: "versionAlreadyExists"
+        } as IAPIError : {err: "Erreur inconnue"} as IAPIError
+    });
+    if (isApiError(res)) {
+        return res
+    }
+    console.log("eefasd")
+    res = await modVersionsFiles.insertOne({
+        version: modVersion.version,
+        file: modVersion.file
+    }).catch((err) => {
+        return err.code == 11000 ? {
+            status: 422,
+            err: "versionAlreadyExists"
+        } as IAPIError : {err: "Erreur inconnue"} as IAPIError
+    });
+    if (isApiError(res)) {
+        return res
+    }
 
 }
 export default doDBOperation;
