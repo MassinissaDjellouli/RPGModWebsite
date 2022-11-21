@@ -1,10 +1,11 @@
 <template>
   <div class="row d-flex justify-content-end m-4">
-    <Button class="p-button-outlined p-button-lg p-button-danger col-3" @click="deconnexion">Déconnexion</Button>
+    <Button class="p-button-outlined p-button-lg p-button-danger col-md-3 col-12" @click="deconnexion">Déconnexion
+    </Button>
   </div>
   <h1 class="text-center p-text-primary mt-5">Bienvenue {{ username }}</h1>
   <div class="row d-flex justify-content-center">
-    <Card class="col-md-4 col-10 m-5">
+    <Card class="col-lg-4 col-10 m-5">
       <template #title>
         Ajouter ou enlever une version du mod
       </template>
@@ -25,17 +26,19 @@
       </template>
       <template #footer>
         <div class="row justify-content-between">
-          <router-link to="/addVersion" class="p-0 col-5 col-lg-6">
+          <router-link to="/addVersion" class="p-0 col-12 mt-2 col-lg-6">
             <Button class="p-button-secondary col-12">Ajouter une version</Button>
           </router-link>
-          <router-link to="/RemoveVersion" class="p-0 col-6 col-lg-5">
+          <router-link to="/RemoveVersion" class="p-0 col-12 mt-2 col-lg-5">
             <Button label="Enlever une version" class="col-12 p-button-outlined p-button-danger"/>
           </router-link>
         </div>
       </template>
     </Card>
-    <Card class="col-5 m-5">
-
+    <Card class="col-lg-5 col-10 m-5">
+      <template #footer>
+        <p>ajouter liens vers autres pages</p>
+      </template>
     </Card>
 
   </div>

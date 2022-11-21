@@ -5,7 +5,7 @@
     <div class="row d-flex justify-content-center">
       <p class="text-center text-light mt-4 col-md-9 col-lg-7 col-xl-5">Inscrivez vous pour pouvoir uploader vos
         statistique et les
-        consulter, laisser des commentaires (si j'ai le temps d'implémenter ça) et plus (Pas garantie)</p>
+        consulter, laisser des commentaires (si j'ai le temps d'implémenter ça) et plus (Pas garanti)</p>
     </div>
     <h4 class="text-center text-light mt-4">Inscrivez vous:</h4>
     <div class="d-flex justify-content-center row">

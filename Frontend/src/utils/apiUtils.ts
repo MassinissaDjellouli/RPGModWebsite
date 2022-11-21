@@ -4,6 +4,7 @@ import type {IAPIError} from '@/models/error';
 import {isApiError} from '../models/error';
 import handleError from './errorHandlerUtil';
 import {
+    doAndHandleDeleteRequest,
     doAndHandleGetRequest,
     doAndHandlePostRequest,
     doAndHandlePutRequest,
@@ -89,5 +90,12 @@ export const uploadMod = async (mod: any): Promise<void | IAPIError> => {
         return;
     }
     return await doAndHandlePostRequest("uploadNewModVersion", mod, store.token);
+}
+export const deleteModVer = async (version: string): Promise<void | IAPIError> => {
+    const store = useLoggedInStore()
+    if (store.userType != "admin") {
+        return;
+    }
+    return await doAndHandleDeleteRequest(`deleteModVersion/${version}`, undefined, store.token);
 }
 

@@ -1,14 +1,14 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Home from '../pages/Home.vue'
-import InscriptionPage from "@/pages/InscriptionPage.vue";
+import Home from '../pages/Everyone/Home.vue'
+import InscriptionPage from "@/pages/Everyone/InscriptionPage.vue";
 import PageNotFound from "@/pages/PageNotFound.vue";
-import ConfirmEmailPage from "@/pages/ConfirmEmail.vue";
-import LoginPage from "@/pages/LoginPage.vue";
-import SendNewConfirmPage from "@/pages/SendNewConfirmPage.vue";
-import ModVersionsPage from "@/pages/ModVersionsPage.vue";
+import ConfirmEmailPage from "@/pages/User/ConfirmEmail.vue";
+import LoginPage from "@/pages/Everyone/LoginPage.vue";
+import SendNewConfirmPage from "@/pages/User/SendNewConfirmPage.vue";
+import ModVersionsPage from "@/pages/User/ModVersionsPage.vue";
 import {useLoggedInStore} from "@/stores/loggedIn";
-import AddVersionPage from "@/pages/AddVersionPage.vue";
-import RemoveVersionPage from "@/pages/RemoveVersionPage.vue";
+import AddVersionPage from "@/pages/Admin/AddVersionPage.vue";
+import RemoveVersionPage from "@/pages/Admin/RemoveVersionPage.vue";
 
 const getRoutes = () => {
     return [

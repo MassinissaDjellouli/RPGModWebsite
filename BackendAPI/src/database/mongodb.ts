@@ -68,6 +68,10 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<string>(getModVersionsPerUpdate, data)
             case "addModVersion":
                 return await transaction<INewModVersion>(addModVersion, data)
+            case "deleteModVersion":
+                return await transaction<string>(removeModVersion, data)
+            default:
+                return {err: "operationNotFound", status: 500} as IAPIError;
         }
     } catch (err) {
         return {err: "unknownError"} as IAPIError;
@@ -245,7 +249,6 @@ const addModVersion = async (modVersion: INewModVersion) => {
         uploadDate: modVersion.uploadDate,
         downloadCount: modVersion.downloadCount
     }).catch((err) => {
-        console.log(err)
         return err.code == 11000 ? {
             status: 422,
             err: "versionAlreadyExists"
@@ -254,7 +257,6 @@ const addModVersion = async (modVersion: INewModVersion) => {
     if (isApiError(res)) {
         return res
     }
-    console.log("eefasd")
     res = await modVersionsFiles.insertOne({
         version: modVersion.version,
         file: modVersion.file
@@ -267,6 +269,13 @@ const addModVersion = async (modVersion: INewModVersion) => {
     if (isApiError(res)) {
         return res
     }
-
+}
+const removeModVersion = async (modVersion: string) => {
+    const result = await modVersions.findOne({version: modVersion});
+    if (result == null) {
+        return {err: "versionNotFound", status: 404} as IAPIError;
+    }
+    await modVersions.findOneAndDelete({version: modVersion});
+    await modVersionsFiles.findOneAndDelete({version: modVersion});
 }
 export default doDBOperation;

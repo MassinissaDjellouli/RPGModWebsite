@@ -32,4 +32,12 @@ export const uploadNewModVersion = async (req: Request, res: Response) => {
     }
     res.sendStatus(201);
 }
+export const deleteModVersion = async (req: Request, res: Response) => {
+    const response = await doDBOperation("deleteModVersion", req.params.version);
+    if (isApiError(response)) {
+        res.status(response.status == undefined ? 500 : response.status).json(response);
+        return;
+    }
+    res.sendStatus(200);
+}
 

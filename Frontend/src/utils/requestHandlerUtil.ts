@@ -16,6 +16,12 @@ export const doAndHandlePostRequest = async (endpoint: string, data?: any, token
         return handleError(result) as IAPIError;
     }
 }
+export const doAndHandleDeleteRequest = async (endpoint: string, data?: any, token?: string): Promise<void | IAPIError> => {
+    const result = await doRequest('delete', endpoint, data, token)
+    if (isApiError(result)) {
+        return handleError(result) as IAPIError;
+    }
+}
 export const doAndHandleTypedPostRequest = async <ReturnType>(endpoint: string, data?: any, token?: string): Promise<ReturnType | IAPIError> => {
     const result = await doRequest('post', endpoint, data, token)
     if (isApiError(result)) {

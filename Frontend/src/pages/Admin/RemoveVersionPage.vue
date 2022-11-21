@@ -4,7 +4,10 @@
   </div>
   <div v-if="!loading.isLoading">
     <Toast position="bottom-right" group="br"/>
-    <h1 class="text-center text-light mt-1">Versions du mod</h1>
+    <h4 class="text-center text-danger" v-if="emptyErrors()">
+      {{ errors }}
+    </h4>
+    <h1 class="text-center text-light mt-1">Supprmier une version du mod</h1>
     <div class="d-flex justify-content-center">
       <div class="p-inputgroup p-0 m-0 d-flex justify-content-center">
                         <span class="p-inputgroup-addon col-1 d-flex justify-content-center">
@@ -45,10 +48,15 @@ import {useLoadingStore} from "@/stores/loading";
 import {ref} from "vue";
 import type {IModVersions} from "@/models/modVersions";
 import {getMinecraftVersions} from "@/utils/requestHandlerUtil";
-import {getModVersions} from "@/utils/apiUtils";
+import {deleteModVer, getModVersions} from "@/utils/apiUtils";
 import {useConfirm} from "primevue/useconfirm";
 import {useToast} from "primevue/usetoast";
+import {isApiError} from "@/models/error";
 
+const errors = ref("");
+const emptyErrors = () => {
+  return errors.value === "";
+};
 const confirm = useConfirm()
 const toast = useToast();
 const onRemove = (event: any, data: IModVersions) => {
@@ -57,9 +65,15 @@ const onRemove = (event: any, data: IModVersions) => {
     message: 'Voulez vous supprimer cette version?',
     icon: 'pi pi-exclamation-triangle',
     acceptClass: 'p-button-danger',
-    accept: () => {
+    accept: async () => {
       toast.add({severity: 'warn', summary: 'Suppression', detail: 'Suppression en cours', group: "br", life: 5000});
-
+      const response = await deleteModVer(data.version);
+      if (isApiError(response)) {
+        errors.value = response.err;
+        toast.add({severity: 'danger', summary: 'Suppression', detail: 'Suppression échoué', group: "br", life: 5000});
+        return;
+      }
+      await getVersions();
       toast.add({severity: 'success', summary: 'Suppression', detail: 'Suppression terminée', group: "br", life: 5000});
     }
   });
