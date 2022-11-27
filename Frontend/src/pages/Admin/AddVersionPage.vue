@@ -20,7 +20,6 @@
                :class="{'p-invalid':fieldErrors.forgeVersion}"
                class="col-xs-11 col-10 mt-3" v-model="state.forgeVersion"/>
     <div class="col-10 mt-3" v-if="!hasFile()">
-
       <FileUpload :name="filesName" @uploader="uploader"
                   :auto="true" :custom-upload="true" :multiple="false"
                   accept=".jar"
@@ -90,13 +89,6 @@ const removeFile = () => {
 const sendNewVer = async () => {
   if (validate()) return
   toast.add({severity: 'info', summary: "Ajout d'une version", detail: 'Ajout de la version en cours', life: 5000});
-  // const bytes2 = new Uint8Array(bytes.split(',').map((byte) => parseInt(byte)));
-  // var blob = new Blob([bytes2], {type: "application/java-archive"});
-  // var link = document.createElement('a');
-  // link.href = window.URL.createObjectURL(blob);
-  // var fileName = "test.jar";
-  // link.download = fileName;
-  // link.click();
   const toUpload: INewModVersion = {
     version: state.version,
     minecraftVersion: selectedVersion.value,
@@ -106,7 +98,6 @@ const sendNewVer = async () => {
     file: state.file
   }
   const response = await uploadMod({modVersion: toUpload});
-  console.log(response)
   if (isApiError(response)) {
     errors.value = response.err;
     toast.add({

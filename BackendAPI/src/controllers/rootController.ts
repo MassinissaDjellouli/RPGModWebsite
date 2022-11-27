@@ -1,4 +1,4 @@
-import {authenticateToken} from '../security/tokenUtils'
+import {authenticateToken} from '../security/securityUtils'
 import {Express} from 'express';
 import {
     confirmEmail,

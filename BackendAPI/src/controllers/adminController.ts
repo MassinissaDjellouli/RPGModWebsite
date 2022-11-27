@@ -6,13 +6,13 @@ import {
     getAdmin,
     uploadNewModVersion
 } from "./endpointOperations/adminControllerOperations";
-import {authenticateToken} from "../security/tokenUtils";
+import {authenticateToken, authorizeAdmin} from "../security/securityUtils";
 
 const adminController = async (app: Express) => {
     app.post('/api/adminLogin', validate, adminLogin);
-    app.get('/api/getAdmin', authenticateToken, getAdmin);
-    app.post('/api/uploadNewModVersion', authenticateToken, uploadNewModVersion);
-    app.delete('/api/deleteModVersion/:version', authenticateToken, deleteModVersion);
+    app.get('/api/getAdmin', authenticateToken, authorizeAdmin, getAdmin);
+    app.post('/api/uploadNewModVersion', authenticateToken, authorizeAdmin, uploadNewModVersion);
+    app.delete('/api/deleteModVersion/:version', authenticateToken, authorizeAdmin, deleteModVersion);
 
 }
 export default adminController;

@@ -1,12 +1,11 @@
 import {Request, Response} from "express"
 import {handleError, validateAdminAfterDB, validateAdminBeforeDB} from '../../utils/apiUtil';
 import doDBOperation from "../../database/mongodb";
-import {generateToken} from "../../security/tokenUtils";
+import {generateToken} from "../../security/securityUtils";
 import {IUser} from "../../models/user";
 import {IAPIError, isApiError} from "../../models/error";
 
 export const adminLogin = async (req: Request, res: Response) => {
-    console.log(req.body)
     if (validateAdminBeforeDB(req.body, res)) return;
     const response = await doDBOperation<IUser>("getAdmin", req.body);
     if (handleError(response, res)) return;

@@ -5,7 +5,7 @@ import doDBOperation from '../../database/mongodb';
 import {IUser} from '../../models/user';
 import {handleError, validateUserAfterDB, validateUserBeforeDB} from '../../utils/apiUtil';
 import {ObjectId} from 'mongodb';
-import {generateToken} from '../../security/tokenUtils';
+import {generateToken} from '../../security/securityUtils';
 import {IUserStats} from '../../models/userStats';
 import {IAPIError, isApiError} from "../../models/error";
 import {IModVersions} from "../../models/modVersions";
