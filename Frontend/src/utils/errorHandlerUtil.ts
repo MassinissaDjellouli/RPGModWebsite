@@ -58,6 +58,9 @@ const handle404 = (error: IAPIError) => {
         case 'wrongUsername':
             error.err = "Ce nom d'utilisateur n'existe pas";
             return error;
+        case 'modNotFound':
+            error.err = "Cette version n'existe pas";
+            return error
     }
 }
 const handle418 = (error: any) => {

@@ -80,8 +80,8 @@ export const loginFromCookies = async (): Promise<void | IAPIError> => {
         return handleError(loginResult) as IAPIError;
     }
 }
-export const getModDownload = async (version: string): Promise<void | IAPIError> => {
-    return await doAndHandleGetRequest(`getModDL/${version}`, undefined);
+export const getModDownload = async (version: string): Promise<number[] | IAPIError> => {
+    return await doAndHandleGetRequest<number[]>(`getModDL/${version}`, undefined);
 
 }
 export const uploadMod = async (mod: any): Promise<void | IAPIError> => {

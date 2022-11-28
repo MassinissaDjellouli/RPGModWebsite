@@ -64,23 +64,29 @@ const onDownload = async (event: any, data: IModVersions) => {
         life: 5000
       });
       const res = await getModDownload(data.version);
-      if (res == undefined) {
-        toast.add({
-          severity: 'success',
-          summary: 'Téléchargement terminé',
-          detail: `Le téléchargement de ${data.version} est terminé`,
-          group: "br",
-          life: 5000
-        });
-      } else if (isApiError(res)) {
+      if (isApiError(res) || res.length == 0) {
         toast.add({
           severity: 'error',
           summary: 'Erreur',
-          detail: `${data.version} n'a pas pu être téléchargé: ${res.err}`,
+          detail: `${data.version} n'a pas pu être téléchargé ${isApiError(res) ? ": " + res.err : ""}`,
           group: "br",
           life: 5000
         });
+        return;
       }
+      const bytes = new Uint8Array(res);
+      const blob = new Blob([bytes], {type: "application/java-archive"});
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `${data.version}.jar`;
+      link.click();
+      toast.add({
+        severity: 'success',
+        summary: 'Téléchargement terminé',
+        detail: `Le téléchargement de ${data.version} est terminé`,
+        group: "br",
+        life: 5000
+      })
     }
   });
 }
@@ -121,5 +127,7 @@ const onChange = async () => {
   }
   loading.setLoading(false);
 }
+
+
 init();
 </script>

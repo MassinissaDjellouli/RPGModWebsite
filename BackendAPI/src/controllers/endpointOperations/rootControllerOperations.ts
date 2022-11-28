@@ -96,6 +96,15 @@ export const getModVersionsPerUpdate = async (req: Request, res: Response) => {
     const resp = await doDBOperation<IModVersions[]>("getModVersionsPerUpdate", req.params.mcversion);
     res.status(200).json(resp);
 }
-export const getModDownload = (req: Request, res: Response) => {
-    res.sendStatus(200)
+export const getModDownload = async (req: Request, res: Response) => {
+    const version = await doDBOperation<IModVersions>("getModVersion", req.params.version);
+    if (version == undefined || isApiError(version)) {
+        console.log(version)
+        res.status(404).json({err: "modNotFound"});
+        return;
+    }
+    (version as IModVersions).downloadCount++;
+    await doDBOperation("updateModVersion", version as IModVersions);
+    const result = await doDBOperation<number[]>("getModDownload", req.params.version);
+    res.status(200).json(result);
 }

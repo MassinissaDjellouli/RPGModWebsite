@@ -39,6 +39,38 @@ export const init = async () => {
 }
 
 
+const getModFile = async (version: string) => {
+    if (version == undefined) {
+        return undefined;
+    }
+    const result = await modVersionsFiles.findOne({version: version});
+    return result?.file as number[];
+}
+const getModVersion = async (version: string) => {
+    if (version == undefined) {
+        return undefined;
+    }
+    const result = await modVersions.findOne({version: version});
+    if (result == null) {
+        return undefined;
+    }
+    return {
+        version: result.version,
+        minecraftVersion: result.minecraftVersion,
+        forgeVersion: result.forgeVersion,
+        uploadDate: result.uploadDate,
+        downloadCount: result.downloadCount,
+    } as IModVersions;
+}
+const updateModVersion = async (version: IModVersions) => {
+    console.log(version)
+    if (version == undefined) {
+        return undefined;
+    }
+    const res = await modVersions.findOneAndUpdate({version: version.version}, {$set: version});
+    console.log(res)
+}
+
 const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Promise<ExpectedReturn | IAPIError | undefined> => {
     try {
         switch (operation) {
@@ -68,8 +100,14 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<string>(getModVersionsPerUpdate, data)
             case "addModVersion":
                 return await transaction<INewModVersion>(addModVersion, data)
+            case "getModVersion":
+                return await transaction<string>(getModVersion, data)
+            case "updateModVersion":
+                return await transaction<IModVersions>(updateModVersion, data)
             case "deleteModVersion":
                 return await transaction<string>(removeModVersion, data)
+            case "getModDownload":
+                return await transaction<string>(getModFile, data)
             default:
                 return {err: "operationNotFound", status: 500} as IAPIError;
         }
@@ -224,6 +262,7 @@ const getModVersions = async (): Promise<IModVersions[]> => {
         }).toArray() as IModVersions[];
 
 }
+
 const getModVersionsPerUpdate = async (update: string): Promise<IModVersions[]> => {
     return (await modVersions.find()
         .map(
