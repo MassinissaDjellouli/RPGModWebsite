@@ -8,6 +8,8 @@ import {
     getStats,
     getUser,
     inscription,
+    isLinked,
+    linkWorld,
     login,
     newConfirmationEmail,
     uploadStats
@@ -18,11 +20,13 @@ const rootController = async (app: Express) => {
     app.post('/api/inscription', validate, inscription);
     app.post('/api/login', validate, login);
     app.get('/api/stats', authenticateToken, getStats);
+    app.get('/api/isLinked/:code', isLinked);
+    app.post('/api/linkWorld/:code', authenticateToken, linkWorld);
     app.get('/api/getUser', authenticateToken, getUser);
     app.get('/api/getModVersions', getModVersions);
     app.get('/api/getModVersions/:mcversion', getModVersionsPerUpdate);
     app.get('/api/getModDL/:version', getModDownload);
-    app.post('/api/uploadStats', validate, authenticateToken, uploadStats);
+    app.post('/api/uploadStats', uploadStats);
     app.put('/api/confirmEmail/:code', validate, confirmEmail);
     app.post('/api/newConfirmationEmail', validate, newConfirmationEmail);
 }

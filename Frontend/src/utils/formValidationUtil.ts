@@ -35,6 +35,7 @@ export const validateAdminLoginFields = (state: any): any => {
     return fieldErrors;
 }
 const validateUsername = (fieldErrors: any, state: any): boolean => {
+    console.log(state)
     const error = fieldErrors.username = state.username.length < 3;
     fieldErrors.errors = error ? "Le nom d'utilisateur doit faire au moins 3 caractères" : "";
     return !error;
@@ -55,6 +56,7 @@ const validatePwdConfirm = (fieldErrors: any, state: any): boolean => {
     return !error;
 }
 export const isEmailAddress = (toCheck: string): boolean => {
+    if (toCheck == undefined) return true;
     const emailRegex = /^([a-z0-9]+(?:[._-][a-z0-9]+)*)@([a-z0-9]+(?:[.-][a-z0-9]+)*\.[a-z]{2,})$/
     return emailRegex.test(toCheck)
 

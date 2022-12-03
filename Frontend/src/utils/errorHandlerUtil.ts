@@ -23,16 +23,21 @@ const handle400 = (error: IAPIError) => {
         case 'wrongUser':
             error.err = "Ce code est invalide";
             return error;
+        case 'noUsernameOrEmail':
+            error.err = "Vous devez remplir les champs"
+            return error
+        default :
+            return error
     }
-    console.log(error)
 }
 const handle401 = (error: IAPIError) => {
     switch (error.err) {
         case 'alreadyConfirmed':
             error.err = "Cette addresse email est déja confirmée";
             return error;
+        default :
+            return error
     }
-    console.log(error)
 }
 const handle403 = (error: IAPIError) => {
     switch (error.err) {
@@ -45,8 +50,9 @@ const handle403 = (error: IAPIError) => {
         case 'password':
             error.err = "Mot de passe incorrect";
             return error;
+        default :
+            return error
     }
-    console.log(error)
 }
 const handle404 = (error: IAPIError) => {
     console.log(error)
@@ -60,6 +66,8 @@ const handle404 = (error: IAPIError) => {
             return error;
         case 'modNotFound':
             error.err = "Cette version n'existe pas";
+            return error
+        default :
             return error
     }
 }
@@ -76,6 +84,11 @@ const handle422 = (error: IAPIError) => {
         case 'versionAlreadyExists':
             error.err = "Cette version existe déjà";
             return error;
+        case 'codeAlreadyUsed':
+            error.err = "Ce monde est déjà lié"
+            return error
+        default :
+            return error
     }
 }
 const handle500 = (error: IAPIError) => {
@@ -85,6 +98,8 @@ const handle500 = (error: IAPIError) => {
             return error;
         case 'Erreur inconnue':
             return error;
+        default :
+            return error
     }
     console.log(error)
 }

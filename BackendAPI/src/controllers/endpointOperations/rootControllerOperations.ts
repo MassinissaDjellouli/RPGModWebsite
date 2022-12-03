@@ -58,14 +58,15 @@ export const getUser = async (req: Request, res: Response) => {
     res.status(200).json(userToReturn);
 }
 export const uploadStats = async (req: Request, res: Response) => {
-    const user: IUser = req.body.user;
-    const response = await doDBOperation<IUserStats>("uploadUserStats", {userId: user.id} as IUserStats);
-    const stats: IUserStats = response as IUserStats;
-    res.status(200).json(stats);
+    const response = await doDBOperation<IUserStats>("uploadUserStats", req.body);
+    if (handleError(response, res)) return;
+    res.sendStatus(200);
 }
 
 export const confirmEmail = async (req: Request, res: Response) => {
+    console.log("confirmEmail");
     const resp = await doDBOperation<IUser>("getUser", req.body);
+    console.log(req.body);
     if (resp == undefined) {
         res.sendStatus(404);
         return;
@@ -74,7 +75,8 @@ export const confirmEmail = async (req: Request, res: Response) => {
         return;
     }
     const user: IUser = resp as IUser;
-    const response = await doDBOperation<string>("confirmEmail", {code: req.params.code, user: user});
+    const response = await doDBOperation<string>("confirmEmail",
+        {code: req.params.code, user: user});
     if (handleError(response, res)) return;
     res.sendStatus(200);
 }
@@ -107,4 +109,36 @@ export const getModDownload = async (req: Request, res: Response) => {
     await doDBOperation("updateModVersion", version as IModVersions);
     const result = await doDBOperation<number[]>("getModDownload", req.params.version);
     res.status(200).json(result);
+}
+
+export const isLinked = async (req: Request, res: Response) => {
+    const code = req.params.code;
+    const response = await doDBOperation<{ code: string, userId: ObjectId }>("getWorldCode", code);
+    if (response == undefined || isApiError(response)) {
+        res.sendStatus(404);
+        return;
+    }
+    const user = await doDBOperation<any>("getUserById", response.userId);
+    if (user == undefined || isApiError(user)) {
+        res.sendStatus(404);
+        return;
+
+    }
+    res.status(200).json({username: user.username});
+}
+
+export const linkWorld = async (req: Request, res: Response) => {
+    const code = req.params.code;
+    const response = await doDBOperation<{ code: string, userId: string }>("getWorldCode", code);
+    if (response != undefined || isApiError(response)) {
+        res.status(422).json({err: "codeAlreadyUsed"});
+        return;
+    }
+    const user = req.body.user;
+    const result = await doDBOperation("addWorldCode", {code: code, userId: user.id});
+    if (isApiError(result)) {
+        res.status(400).json(result);
+        return;
+    }
+    res.sendStatus(200);
 }

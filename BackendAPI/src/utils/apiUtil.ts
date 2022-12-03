@@ -16,6 +16,7 @@ export const handleError = (response: any, res: Response): boolean => {
                     res.status(400).json(error);
                     return true;
                 case "wrongCode":
+                case "userNotFound":
                     res.status(404).json(error);
                     return true;
                 case "expired":

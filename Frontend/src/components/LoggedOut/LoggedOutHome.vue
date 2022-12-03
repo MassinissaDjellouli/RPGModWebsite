@@ -3,9 +3,9 @@
   <div>
     <h1 class="text-center text-light mt-4">Bienvenue sur la page d'accueil!</h1>
     <div class="row d-flex justify-content-center">
-      <p class="text-center text-light mt-4 col-md-9 col-lg-7 col-xl-5">Inscrivez vous pour pouvoir uploader vos
-        statistique et les
-        consulter, laisser des commentaires (si j'ai le temps d'implémenter ça) et plus (Pas garanti)</p>
+      <p class="text-center text-light mt-4 col-md-9 col-lg-7 col-xl-5">Inscrivez vous pour pouvoir uploader des
+        statistique sur vos mondes minecraft et les
+        consulter</p>
     </div>
     <h4 class="text-center text-light mt-4">Inscrivez vous:</h4>
     <div class="d-flex justify-content-center row">

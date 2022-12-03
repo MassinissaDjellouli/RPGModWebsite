@@ -22,6 +22,12 @@
         Mes statistiques
       </Button>
     </router-link>
+    <router-link to="/LinkWorld" class=" text-light no-line">
+      <Button class="col-12 text-light mt-4 p-button-text">
+        Lier un monde Minecraft
+      </Button>
+    </router-link>
+
   </Sidebar>
   <h1 class="text-center p-text-primary mt-5">Bienvenue {{ username }}</h1>
 </template>

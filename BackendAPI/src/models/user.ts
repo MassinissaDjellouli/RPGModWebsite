@@ -1,4 +1,5 @@
-import { ObjectId } from 'mongodb';
+import {ObjectId} from 'mongodb';
+
 export interface IUser {
     id: ObjectId | undefined;
     username: string;
@@ -6,5 +7,5 @@ export interface IUser {
     email: string;
     confirmedEmail: boolean;
     creationDate: string;
-    linked: boolean;
+    linkedWorlds: string[];
 }

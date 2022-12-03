@@ -28,6 +28,7 @@ import confirmEmailmVue from '@/pages/User/ConfirmEmail.vue';
 import addModVersion from '@/pages/Admin/AddVersionPage.vue';
 import removeModVersion from '@/pages/Admin/RemoveVersionPage.vue';
 import inscriptionPage from "@/pages/Everyone/InscriptionPage.vue";
+import linkWorldPage from "@/pages/User/LinkWorldPage.vue";
 import Toolbar from 'primevue/toolbar';
 import FileUpload from 'primevue/fileupload';
 import Card from 'primevue/card';
@@ -74,6 +75,7 @@ const addPages = (app: any) => {
     app.component('LoginPage', loginPageVue);
     app.component('RemoveVersionPage', addModVersion);
     app.component('AddVersionPage', removeModVersion);
+    app.component('LinkWorldPage', linkWorldPage);
 }
 const addCustomComponents = (app: any) => {
     app.component('LoggedInNavBar', loggedInNavBarVue);

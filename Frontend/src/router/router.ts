@@ -8,6 +8,7 @@ import SendNewConfirmPage from "@/pages/User/SendNewConfirmPage.vue";
 import ModVersionsPage from "@/pages/User/ModVersionsPage.vue";
 import {useLoggedInStore} from "@/stores/loggedIn";
 import AddVersionPage from "@/pages/Admin/AddVersionPage.vue";
+import LinkWorldPage from "@/pages/User/LinkWorldPage.vue";
 import RemoveVersionPage from "@/pages/Admin/RemoveVersionPage.vue";
 
 const getRoutes = () => {
@@ -56,6 +57,11 @@ const getRoutes = () => {
             name: 'RemoveVersion',
             component: RemoveVersionPage
         },
+        {
+            path: '/LinkWorld',
+            name: 'LinkWorld',
+            component: LinkWorldPage
+        },
 
         {
             path: '/:pathMatch(.*)*',
@@ -72,12 +78,18 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const loggedOutPages = ['Inscription', 'Login', 'ConfirmEmail', 'NewConfirm'];
     const adminPages = ['RemoveVersion', 'AddVersion'];
+    const loggedInPages = ['LinkWorld'];
     if (useLoggedInStore().isLoggedIn && loggedOutPages.includes(to.name as string)) {
         next({name: "Home"});
         return
     }
     if ((!useLoggedInStore().isLoggedIn || useLoggedInStore().userType !== "admin")
         && adminPages.includes(to.name as string)) {
+        next({name: "ErrorPage"});
+        return;
+    }
+    if ((!useLoggedInStore().isLoggedIn || useLoggedInStore().userType !== "user")
+        && loggedInPages.includes(to.name as string)) {
         next({name: "ErrorPage"});
         return;
     }

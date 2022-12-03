@@ -78,7 +78,11 @@ const confirmEmail = () => {
     return;
   }
   loading.setLoading(true);
+
+  console.log(state.value)
   const result = validateLoginFields(state.value)
+  console.log(state.value)
+  console.log(result)
   errors.value = result.errors;
   delete result.errors
   invalidFields.value = result;
@@ -98,6 +102,7 @@ const sendConfirm = async () => {
     } as ITempUserEmail;
   }
   const response = await confirmEmailRequest(confirmation.value.trim(), state.value)
+  console.log(response)
   useLoadingStore().setLoading(false);
   if (isApiError(response)) {
     requestError.value = response.err;

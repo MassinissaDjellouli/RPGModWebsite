@@ -24,17 +24,17 @@ const confirmationCodes = db.collection("confirmationCodes");
 const admins = db.collection("admins");
 const modVersions = db.collection("modVersions");
 const modVersionsFiles = db.collection("modVersionsFiles");
+const worldCodes = db.collection("worldCodes");
 export const init = async () => {
 
     await users.createIndex({username: 1}, {unique: true});
     await users.createIndex({email: 1}, {unique: true});
     await admins.createIndex({username: 1}, {unique: true});
-    await userStats.createIndex({userId: 1}, {unique: true});
     await confirmationCodes.createIndex({code: 1}, {unique: true});
     await confirmationCodes.createIndex({userId: 1}, {unique: true});
     await modVersions.createIndex({version: 1}, {unique: true});
     await modVersionsFiles.createIndex({version: 1}, {unique: true});
-
+    await worldCodes.createIndex({code: 1}, {unique: true});
     console.log("Database initialized");
 }
 
@@ -78,6 +78,8 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<IUser>(createUser, data);
             case "getUser":
                 return await transaction<any>(getUser, data);
+            case "getUserById":
+                return await transaction<ObjectId>(getUserById, data);
             case "getAdmin":
                 return await transaction<any>(getAdmin, data);
             case "getUserStats":
@@ -108,12 +110,19 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<string>(removeModVersion, data)
             case "getModDownload":
                 return await transaction<string>(getModFile, data)
+            case "getWorldCode":
+                return await transaction<string>(getWorldCode, data)
+            case "addWorldCode":
+                return await transaction<{ code: string, userId: ObjectId }>(addWorldCode, data)
             default:
                 return {err: "operationNotFound", status: 500} as IAPIError;
         }
     } catch (err) {
         return {err: "unknownError"} as IAPIError;
     }
+}
+const addWorldCode = async (code: { code: string, userId: ObjectId }) => {
+    return worldCodes.insertOne(code);
 }
 const createUser = async (user: IUser) => {
     let res: ObjectId | undefined | IAPIError;
@@ -138,6 +147,9 @@ const getUser = async (body: any) => {
         return users.findOne({email: body.email});
     }
     return {err: "emptyFields"} as IAPIError;
+}
+const getUserById = async (id: string) => {
+    return await users.findOne({_id: new ObjectId(id)});
 }
 const getAdmin = async (body: any) => {
     if (body.username == undefined) {
@@ -183,19 +195,22 @@ const getUserStats = async (id: ObjectId) => {
 
 const uploadUserStats = async (stats: IUserStats) => {
     delete stats.id;
-    const userStats = await users.findOne({userId: stats.userId})
-    if (userStats == null) {
-        await users.insertOne(stats)
-        return;
+    const user = await users.findOne({username: stats.username})
+    if (user == null) {
+        return {err: "userNotFound"} as IAPIError;
     }
-    await users.updateOne({userId: stats.userId}, {$set: stats});
+    const worlds: Set<string> = new Set(user.linkedWorlds);
+    worlds.add(stats.worldId);
+    user.linkedWorlds = Array.from(worlds);
+    await users.findOneAndUpdate({username: stats.username}, {$set: user});
+    await userStats.insertOne({...stats, uploadTime: new Date()})
 }
 
 const addConfirmationCode = async (code: IConfirmationCode) => {
     let res: string | IAPIError = "";
     let wrongCode = true;
     while (wrongCode) {
-        await users.insertOne(code)
+        await confirmationCodes.insertOne(code)
             .then((_) => {
                 res = code.code;
                 wrongCode = false;
@@ -316,5 +331,12 @@ const removeModVersion = async (modVersion: string) => {
     }
     await modVersions.findOneAndDelete({version: modVersion});
     await modVersionsFiles.findOneAndDelete({version: modVersion});
+}
+const getWorldCode = async (worldId: string) => {
+    const world = await worldCodes.findOne({code: worldId});
+    if (world == null) {
+        return undefined;
+    }
+    return world;
 }
 export default doDBOperation;

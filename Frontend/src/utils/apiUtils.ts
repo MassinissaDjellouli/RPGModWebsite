@@ -54,11 +54,13 @@ export const sendNewConfirmationEmail = async (email: string): Promise<void | IA
 }
 export const confirmEmail = async (confirmationCode: string, user: ITempUser): Promise<void | IAPIError> => {
     const result = await doAndHandleTypedPostRequest<IUser>("login", user)
-    return (
-        !isApiError(result)
-            ? await doAndHandlePutRequest(`confirmEmail/${confirmationCode}`, user)
-            : result
-    )
+    if (isApiError(result)) {
+
+        if (result.err !== "Votre addresse email n'a pas été confirmée") {
+            return result
+        }
+    }
+    return await doAndHandlePutRequest(`confirmEmail/${confirmationCode}`, user)
 }
 export const getModVersions = async (version: string | undefined = undefined): Promise<IModVersions[]> => {
     version = version === undefined ? "" : `/${version}`
@@ -90,6 +92,13 @@ export const uploadMod = async (mod: any): Promise<void | IAPIError> => {
         return;
     }
     return await doAndHandlePostRequest("uploadNewModVersion", mod, store.token);
+}
+export const linkMinecraftWorld = async (code: string): Promise<void | IAPIError> => {
+    const store = useLoggedInStore()
+    if (store.userType == "admin") {
+        return;
+    }
+    return await doAndHandlePostRequest(`linkWorld/${code}`, undefined, store.token);
 }
 export const deleteModVer = async (version: string): Promise<void | IAPIError> => {
     const store = useLoggedInStore()
