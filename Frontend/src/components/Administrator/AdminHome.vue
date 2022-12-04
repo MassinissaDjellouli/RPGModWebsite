@@ -36,8 +36,13 @@
       </template>
     </Card>
     <Card class="col-lg-5 col-10 m-5">
+      <template #title>
+        Liens vers les autres pages
+      </template>
       <template #footer>
-        <p>ajouter liens vers autres pages</p>
+        <router-link to="/modVersions">
+          <Button label="Versions du mod"/>
+        </router-link>
       </template>
     </Card>
 

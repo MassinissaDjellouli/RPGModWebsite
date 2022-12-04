@@ -26,11 +26,6 @@ const getRoutes = () => {
             component: InscriptionPage
         },
         {
-            path: '/download',
-            name: 'Download',
-            component: InscriptionPage
-        },
-        {
             path: '/login',
             name: 'Login',
             component: LoginPage
@@ -74,7 +69,6 @@ const getRoutes = () => {
             name: 'MoreStats',
             component: moreStatsPage
         },
-
         {
             path: '/:pathMatch(.*)*',
             name: 'ErrorPage',

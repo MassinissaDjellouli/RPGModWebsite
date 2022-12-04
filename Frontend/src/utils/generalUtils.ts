@@ -149,3 +149,6 @@ export const getXp = (stat: string, stats: IUserStats) => {
 export const formatDate = (date: Date) => {
     return date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0];
 }
+export const formatDateForFile = (date: Date) => {
+    return formatDate(date).split(' ').join('_').split(':').join('-');
+}

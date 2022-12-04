@@ -10,6 +10,9 @@
       <i class="text-light pi pi-chevron-left pt-1 ms-5 "/> Retour
     </router-link>
     <h4 class="text-center text-light mt-2" v-if="isEmpty()">Aucune statistique uploadée</h4>
+    <div v-else class="justify-content-center d-flex">
+      <Button class="mt-5" label="Télécharger les données" icon="pi pi-download" @click="downloadStats"/>
+    </div>
     <DataTable :value="stats" :paginator="true" class="p-datatable mt-5" :rows="10" v-if="!isEmpty()"
                dataKey="id" :rowHover="true"
                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport
@@ -31,7 +34,7 @@ import {ref} from "vue";
 import {getAllStatsByID} from "@/utils/apiUtils";
 import {useLoadingStore} from "@/stores/loading";
 import type {IUserStats} from "@/models/userStats";
-import {formatDate, getXp} from "@/utils/generalUtils";
+import {formatDate, formatDateForFile, getXp} from "@/utils/generalUtils";
 import {useRoute} from "vue-router";
 
 const columns = [
@@ -75,8 +78,34 @@ const init = async () => {
   await getStats();
   loading.setLoading(false);
 }
-const getHighestDate = (statsRes: IUserStats[]) => {
-  return Math.max(...statsRes.map((stat) => new Date(stat.uploadTime).getTime()))
+const downloadStats = () => {
+  console.log(stats.value)
+  const basicData = {
+    basicData: {
+      worldId: stats.value[0].worldId,
+      username: stats.value[0].username,
+    }
+  }
+  const statsToDownload = stats.value.map((stat: any) => {
+    const newStat = {...stat}
+    delete newStat._id;
+    delete newStat.worldId;
+    delete newStat.username;
+    return {...newStat};
+  })
+
+  const data = JSON.stringify(
+      {
+        ...basicData,
+        stats: statsToDownload
+      });
+  const blob = new Blob([data], {type: "text/json"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.download = `${basicData.basicData.username}_${basicData.basicData.worldId}_${formatDateForFile(new Date())
+  }.json`
+  link.href = url;
+  link.click();
 }
 init();
 </script>
