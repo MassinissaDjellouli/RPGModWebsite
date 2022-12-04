@@ -10,6 +10,8 @@ import {useLoggedInStore} from "@/stores/loggedIn";
 import AddVersionPage from "@/pages/Admin/AddVersionPage.vue";
 import LinkWorldPage from "@/pages/User/LinkWorldPage.vue";
 import RemoveVersionPage from "@/pages/Admin/RemoveVersionPage.vue";
+import myStatsPage from "@/pages/User/MyStatsPage.vue";
+import moreStatsPage from "@/pages/User/MoreStatsPage.vue";
 
 const getRoutes = () => {
     return [
@@ -62,6 +64,16 @@ const getRoutes = () => {
             name: 'LinkWorld',
             component: LinkWorldPage
         },
+        {
+            path: '/MyStats',
+            name: 'MyStats',
+            component: myStatsPage
+        },
+        {
+            path: '/MyStats/:id',
+            name: 'MoreStats',
+            component: moreStatsPage
+        },
 
         {
             path: '/:pathMatch(.*)*',
@@ -78,7 +90,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const loggedOutPages = ['Inscription', 'Login', 'ConfirmEmail', 'NewConfirm'];
     const adminPages = ['RemoveVersion', 'AddVersion'];
-    const loggedInPages = ['LinkWorld'];
+    const loggedInPages = ['LinkWorld', 'MyStats', 'MoreStats'];
     if (useLoggedInStore().isLoggedIn && loggedOutPages.includes(to.name as string)) {
         next({name: "Home"});
         return

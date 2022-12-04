@@ -1,6 +1,4 @@
-export const goToDocs = () => {
-    window.location.href = "https://github.com/MassinissaDjellouli/RPGMod-Minecraft";
-}
+import myStats from "@/pages/User/MyStatsPage.vue";
 import {createPinia} from 'pinia'
 import ProgressSpinner from 'primevue/progressspinner';
 import 'primevue/resources/themes/bootstrap4-dark-blue/theme.css';
@@ -47,6 +45,12 @@ import ToastService from 'primevue/toastservice';
 import ConfirmPopup from 'primevue/confirmpopup';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
+import moreStatsPage from "@/pages/User/MoreStatsPage.vue";
+import type {IUserStats} from "@/models/userStats";
+
+export const goToDocs = () => {
+    window.location.href = "https://github.com/MassinissaDjellouli/RPGMod-Minecraft";
+}
 
 
 const addPrimeVueComponents = (app: any) => {
@@ -76,6 +80,8 @@ const addPages = (app: any) => {
     app.component('RemoveVersionPage', addModVersion);
     app.component('AddVersionPage', removeModVersion);
     app.component('LinkWorldPage', linkWorldPage);
+    app.component('MyStats', myStats);
+    app.component('MoreStats', moreStatsPage);
 }
 const addCustomComponents = (app: any) => {
     app.component('LoggedInNavBar', loggedInNavBarVue);
@@ -110,4 +116,36 @@ export const init = async (app: any) => {
     app.use(ToastService);
     addToApp(app);
     app.mount('#app')
+}
+export const getXp = (stat: string, stats: IUserStats) => {
+    let xpNeededPerLevel = 150
+    let totalXp
+    const xpIncrease = 25
+    switch (stat) {
+        case "Soldat": {
+            totalXp = stats.totalCombatXp
+            for (let i = 0; i < stats.combatLevel; i++) {
+                totalXp -= xpNeededPerLevel
+                xpNeededPerLevel += xpNeededPerLevel * (xpIncrease / 100)
+            }
+            return Math.round(totalXp) + "/" + Math.round(xpNeededPerLevel)
+        }
+        case "Mineur":
+            totalXp = stats.totalMiningXp
+            for (let i = 0; i < stats.miningLevel; i++) {
+                totalXp -= xpNeededPerLevel
+                xpNeededPerLevel += xpNeededPerLevel * (xpIncrease / 100)
+            }
+            return Math.round(totalXp) + "/" + Math.round(xpNeededPerLevel)
+        case "Bucheron":
+            totalXp = stats.totalForagingXp
+            for (let i = 0; i < stats.foragingLevel; i++) {
+                totalXp -= xpNeededPerLevel
+                xpNeededPerLevel += xpNeededPerLevel * (xpIncrease / 100)
+            }
+            return Math.round(totalXp) + "/" + Math.round(xpNeededPerLevel)
+    }
+}
+export const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0];
 }

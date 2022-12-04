@@ -12,6 +12,7 @@ import {
     doRequest
 } from './requestHandlerUtil';
 import type {IModVersions} from "@/models/modVersions";
+import type {IUserStats} from "@/models/userStats";
 
 
 export const login = async (user: ITempUser): Promise<string | IAPIError> => {
@@ -44,10 +45,10 @@ export const inscription = async (user: ITempUserInscription): Promise<void | IA
 
 }
 export const getUser = async (token: string): Promise<IUser | IAPIError> => {
-    return await doAndHandleGetRequest<IUser>('getUser', undefined, token)
+    return await doAndHandleGetRequest<IUser>('getUser', token)
 }
 export const getAdmin = async (token: string): Promise<IAdmin | IAPIError> => {
-    return await doAndHandleGetRequest<IAdmin>('getAdmin', undefined, token)
+    return await doAndHandleGetRequest<IAdmin>('getAdmin', token)
 }
 export const sendNewConfirmationEmail = async (email: string): Promise<void | IAPIError> => {
     return await doAndHandlePostRequest('newConfirmationEmail', {email: email})
@@ -106,5 +107,22 @@ export const deleteModVer = async (version: string): Promise<void | IAPIError> =
         return;
     }
     return await doAndHandleDeleteRequest(`deleteModVersion/${version}`, undefined, store.token);
+}
+
+export const getAllStats = async (): Promise<IUserStats[]> => {
+    const store = useLoggedInStore()
+    if (store.userType != "user") {
+        return [];
+    }
+    const res = await doAndHandleGetRequest("stats", useLoggedInStore().token);
+    return isApiError(res) ? [] : res as IUserStats[];
+}
+export const getAllStatsByID = async (worldID: string): Promise<IUserStats[]> => {
+    const store = useLoggedInStore()
+    if (store.userType != "user") {
+        return [];
+    }
+    const res = await doAndHandleGetRequest(`stats/${worldID}`, useLoggedInStore().token);
+    return isApiError(res) ? [] : res as IUserStats[];
 }
 

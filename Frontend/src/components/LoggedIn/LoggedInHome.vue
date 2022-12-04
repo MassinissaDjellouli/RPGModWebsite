@@ -17,7 +17,7 @@
         Statistiques des joueurs
       </Button>
     </router-link>
-    <router-link to="/" class=" text-light no-line">
+    <router-link to="/MyStats" class=" text-light no-line">
       <Button class="col-12 text-light mt-4 p-button-text">
         Mes statistiques
       </Button>

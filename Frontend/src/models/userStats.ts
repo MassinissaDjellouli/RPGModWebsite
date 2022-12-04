@@ -1,6 +1,8 @@
 export interface IUserStats {
     id: string | undefined;
-    userId: string;
+    uploadTime: string;
+    username: string;
+    worldId: string;
     blocksMined: number;
     mobsKilled: number;
     blocksForaged: number;

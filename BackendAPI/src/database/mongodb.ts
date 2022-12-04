@@ -84,6 +84,8 @@ const doDBOperation = async <ExpectedReturn>(operation: string, data?: any): Pro
                 return await transaction<any>(getAdmin, data);
             case "getUserStats":
                 return await transaction<ObjectId>(getUserStats, data);
+            case "getUserStatsById":
+                return await transaction<any>(getUserStatsById, data);
             case "uploadUserStats":
                 return await transaction<ObjectId>(uploadUserStats, data);
             case "addConfirmationCode":
@@ -189,8 +191,11 @@ const transaction = async <DataType>(callback: Function, data?: DataType): Promi
 
 }
 
-const getUserStats = async (id: ObjectId) => {
-    return users.findOne({userId: id});
+const getUserStats = async (username: string) => {
+    return userStats.find({username: username}).toArray();
+}
+const getUserStatsById = async (data: { username: string, worldId: string }) => {
+    return userStats.find({username: data.username, worldId: data.worldId}).toArray();
 }
 
 const uploadUserStats = async (stats: IUserStats) => {

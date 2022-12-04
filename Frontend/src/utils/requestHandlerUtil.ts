@@ -29,8 +29,8 @@ export const doAndHandleTypedPostRequest = async <ReturnType>(endpoint: string, 
     }
     return result as ReturnType;
 }
-export const doAndHandleGetRequest = async <ReturnType>(endpoint: string, data?: any, token?: string): Promise<ReturnType | IAPIError> => {
-    const result = await doRequest('get', endpoint, data, token)
+export const doAndHandleGetRequest = async <ReturnType>(endpoint: string, token?: string): Promise<ReturnType | IAPIError> => {
+    const result = await doRequest('get', endpoint, undefined, token)
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
     }

@@ -6,6 +6,7 @@ import {
     getModVersions,
     getModVersionsPerUpdate,
     getStats,
+    getStatsById,
     getUser,
     inscription,
     isLinked,
@@ -20,6 +21,7 @@ const rootController = async (app: Express) => {
     app.post('/api/inscription', validate, inscription);
     app.post('/api/login', validate, login);
     app.get('/api/stats', authenticateToken, getStats);
+    app.get('/api/stats/:worldId', authenticateToken, getStatsById);
     app.get('/api/isLinked/:code', isLinked);
     app.post('/api/linkWorld/:code', authenticateToken, linkWorld);
     app.get('/api/getUser', authenticateToken, getUser);

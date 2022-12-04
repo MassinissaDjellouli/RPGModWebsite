@@ -34,7 +34,18 @@ export const login = async (req: Request, res: Response) => {
 
 export const getStats = async (req: Request, res: Response) => {
     const user: IUser = req.body.user;
-    const response = await doDBOperation<IUserStats>("getUserStats", user.id);
+    const response = await doDBOperation<IUserStats>("getUserStats", user.username);
+    if (response == undefined) {
+        res.sendStatus(404);
+        return;
+    }
+    const stats: IUserStats = response as IUserStats;
+    res.status(200).json(stats);
+}
+export const getStatsById = async (req: Request, res: Response) => {
+    const user: IUser = req.body.user;
+    const id: string = req.params.worldId;
+    const response = await doDBOperation<IUserStats>("getUserStatsById", {username: user.username, worldId: id});
     if (response == undefined) {
         res.sendStatus(404);
         return;
