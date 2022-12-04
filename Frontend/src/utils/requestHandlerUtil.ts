@@ -2,7 +2,7 @@ import {type IAPIError, isApiError} from "@/models/error";
 import axios from "axios";
 import handleError from "./errorHandlerUtil";
 
-const API_URL = "http://localhost:5555/api";
+const API_URL = "https://morning-scrubland-27211.herokuapp.com/api";
 export const getURL = () => API_URL;
 export const doAndHandlePutRequest = async (endpoint: string, data?: any, token?: string): Promise<void | IAPIError> => {
     const result = await doRequest('put', endpoint, data, token)
