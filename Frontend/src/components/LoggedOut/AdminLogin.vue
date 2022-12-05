@@ -42,7 +42,6 @@ const sendLogin = async () => {
   if (isApiError(response)) {
     useLoadingStore().setLoading(false);
     errors.value = response.err;
-    console.log(response.err);
     return
   }
   useLoadingStore().setLoading(false);

@@ -55,7 +55,6 @@ const handle403 = (error: IAPIError) => {
     }
 }
 const handle404 = (error: IAPIError) => {
-    console.log(error)
     switch (error.err) {
         case 'emailNotFound':
         case 'wrongEmail':
@@ -67,16 +66,17 @@ const handle404 = (error: IAPIError) => {
         case 'modNotFound':
             error.err = "Cette version n'existe pas";
             return error
+        case 'wrongCode':
+            error.err = "Ce code est invalide";
+            return error
         default :
             return error
     }
 }
 const handle418 = (error: any) => {
-    console.log(error)
     window.alert("babbage")
 }
 const handle422 = (error: IAPIError) => {
-    console.log(error)
     switch (error.err) {
         case 'usernameOrEmailAlreadyExists':
             error.err = "Ce nom d'utilisateur ou cette addresse email existe déjà";
@@ -101,6 +101,5 @@ const handle500 = (error: IAPIError) => {
         default :
             return error
     }
-    console.log(error)
 }
 export default handleError;

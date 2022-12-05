@@ -60,7 +60,6 @@ const loading = useLoadingStore();
 const stats = ref([] as IUserStats[]);
 const getStats = async () => {
   const statsRes = await getAllStatsByID(worldId);
-  console.log(statsRes)
   for (const stat of statsRes) {
     const newStats: any = stat;
     newStats.xpBeforeNextMiningLevel = getXp("Mineur", newStats);
@@ -69,7 +68,6 @@ const getStats = async () => {
     newStats.uploadTime = formatDate(new Date(newStats.uploadTime));
     stats.value.push(newStats);
   }
-  console.log(stats.value);
 }
 
 const isEmpty = () => stats.value.length === 0;
@@ -79,7 +77,6 @@ const init = async () => {
   loading.setLoading(false);
 }
 const downloadStats = () => {
-  console.log(stats.value)
   const basicData = {
     basicData: {
       worldId: stats.value[0].worldId,

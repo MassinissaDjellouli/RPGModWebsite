@@ -63,7 +63,6 @@ const getStats = async () => {
     newStats.uploadTime = formatDate(new Date(newStats.uploadTime));
     stats.value.push(newStats);
   }
-  console.log(stats.value);
 }
 const isEmpty = () => stats.value.length === 0;
 const init = async () => {

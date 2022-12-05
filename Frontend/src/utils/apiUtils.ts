@@ -1,4 +1,4 @@
-import type {IAdmin, ITempUser, ITempUserInscription, IUser} from '../models/user';
+import type {IAdmin, ITempUser, ITempUserEmail, ITempUserInscription, ITempUserUsername, IUser} from '../models/user';
 import {useLoggedInStore} from '../stores/loggedIn';
 import type {IAPIError} from '@/models/error';
 import {isApiError} from '../models/error';
@@ -16,6 +16,7 @@ import type {IUserStats} from "@/models/userStats";
 
 
 export const login = async (user: ITempUser): Promise<string | IAPIError> => {
+    user = lowerUsernameOrEmail(user);
     const result = await doRequest('post', 'login', user)
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
@@ -27,13 +28,23 @@ export const login = async (user: ITempUser): Promise<string | IAPIError> => {
     }
     return result as string;
 }
-
-export const adminLogin = async (user: ITempUser): Promise<void | IAPIError> => {
+const lowerUsernameOrEmail = (user: ITempUser) => {
+    const username = (user as ITempUserUsername).username;
+    const email = (user as ITempUserEmail).email;
+    if(username != undefined) {
+        (user as ITempUserUsername).username = username.toLowerCase();
+    }
+    if(email != undefined) {
+        (user as ITempUserEmail).email = (user as ITempUserEmail).email.toLowerCase();
+    }
+    return user;
+}
+export const adminLogin = async (user: ITempUserUsername): Promise<void | IAPIError> => {
+    user = lowerUsernameOrEmail(user) as ITempUserUsername;
     const result = await doRequest('post', 'adminLogin', user)
     if (isApiError(result)) {
         return handleError(result) as IAPIError;
     }
-    console.log(user)
     const store = useLoggedInStore()
     const loginResult = await store.loginAdmin(result);
     if (isApiError(loginResult)) {
@@ -54,9 +65,9 @@ export const sendNewConfirmationEmail = async (email: string): Promise<void | IA
     return await doAndHandlePostRequest('newConfirmationEmail', {email: email})
 }
 export const confirmEmail = async (confirmationCode: string, user: ITempUser): Promise<void | IAPIError> => {
+    user = lowerUsernameOrEmail(user);
     const result = await doAndHandleTypedPostRequest<IUser>("login", user)
     if (isApiError(result)) {
-
         if (result.err !== "Votre addresse email n'a pas été confirmée") {
             return result
         }
