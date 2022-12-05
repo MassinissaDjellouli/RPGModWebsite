@@ -7,7 +7,7 @@
     <h4 class="text-center text-danger" v-if="emptyErrors()">
       {{ errors }}
     </h4>
-    <h1 class="text-center text-light mt-1">Supprmier une version du mod</h1>
+    <h1 class="text-center text-light mt-1">Supprimer une version du mod</h1>
     <div class="d-flex justify-content-center">
       <div class="p-inputgroup p-0 m-0 d-flex justify-content-center">
                         <span class="p-inputgroup-addon col-1 d-flex justify-content-center">

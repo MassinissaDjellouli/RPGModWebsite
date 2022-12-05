@@ -15,7 +15,7 @@
         </Button>
       </router-link>
       <div class="col-12 d-flex justify-content-center row">
-        <router-link to="/login" class="text-center text-light mt-1 col-1">Déja inscrit?</router-link>
+        <router-link to="/login" class="text-center text-light mt-1 col-12">Déja inscrit?</router-link>
       </div>
       <Card class="col-xl-4 col-8 mt-5">
         <template #header>
